@@ -1,0 +1,3098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux SysAdmin Reference</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f2;
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #888780;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.22);
+    --color-background-info: #e6f1fb;
+    --color-text-info: #185fa5;
+    --color-background-warning: #faeeda;
+    --color-text-warning: #854f0b;
+    --color-background-success: #eaf3de;
+    --color-text-success: #3b6d11;
+    --color-background-danger: #fcebeb;
+    --color-text-danger: #a32d2d;
+    --font-mono: 'Courier New', monospace;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a28;
+      --color-text-primary: #e8e6de;
+      --color-text-secondary: #a8a69e;
+      --color-text-tertiary: #6e6c66;
+      --color-border-tertiary: rgba(255,255,255,0.1);
+      --color-border-secondary: rgba(255,255,255,0.2);
+      --color-background-info: #042c53;
+      --color-text-info: #85b7eb;
+      --color-background-warning: #412402;
+      --color-text-warning: #fac775;
+      --color-background-success: #173404;
+      --color-text-success: #97c459;
+      --color-background-danger: #501313;
+      --color-text-danger: #f09595;
+    }
+  }
+  body {
+    font-family: var(--font-mono);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    padding: 1.5rem;
+    min-height: 100vh;
+  }
+
+  /* Section titles */
+  .chapter-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+  .chapter {
+    margin-bottom: 3rem;
+  }
+
+  /* Tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 12px; font-weight: 500; cursor: pointer; color: var(--color-text-secondary); background: var(--color-background-secondary); transition: all .15s; }
+  .tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
+
+  /* Content sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .cmd-card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); margin-bottom: 10px; overflow: hidden; }
+  .cmd-header { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; cursor: pointer; }
+  .cmd-name { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--color-text-info); flex: 0 0 auto; min-width: 130px; }
+  .cmd-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
+  .cmd-body { display: none; border-top: 0.5px solid var(--color-border-tertiary); padding: 10px 14px; }
+  .cmd-body.open { display: block; }
+  .example { background: var(--color-background-primary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); padding: 8px 12px; margin-top: 6px; }
+  .ex-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+  .ex-cmd { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-primary); margin: 2px 0; }
+  .ex-comment { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+  .chevron { margin-left: auto; font-size: 11px; color: var(--color-text-tertiary); transition: transform .2s; }
+  .chevron.open { transform: rotate(180deg); }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-left: 6px; font-weight: 500; }
+  .b-dep { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .b-new { background: var(--color-background-success); color: var(--color-text-success); }
+  .b-adv { background: var(--color-background-danger); color: var(--color-text-danger); }
+
+  .doc-link {
+    font-size: 10px;
+    color: var(--color-text-info);
+    text-decoration: none;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 0.5px solid var(--color-border-secondary);
+    opacity: 0.75;
+    transition: opacity .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .doc-link:hover { opacity: 1; }
+  h3 { font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+</style>
+</head>
+<body>
+
+<!-- ===== CPU & MEMORY ===== -->
+<div class="chapter">
+  <div class="chapter-title">🖥️ Linux CPU &amp; Memory Performance</div>
+  <div class="tabs">
+  <div class="tab active" onclick="showTab('cpu', 'cpu_overview', this)">CPU Overview</div>
+  <div class="tab" onclick="showTab('cpu', 'cpu_detail', this)">CPU Detail</div>
+  <div class="tab" onclick="showTab('cpu', 'memory', this)">Memory</div>
+  <div class="tab" onclick="showTab('cpu', 'processes', this)">Processes</div>
+  <div class="tab" onclick="showTab('cpu', 'load', this)">Load & Scheduler</div>
+  <div class="tab" onclick="showTab('cpu', 'io', this)">I/O & Disk</div>
+  <div class="tab" onclick="showTab('cpu', 'profiling', this)">Profiling</div>
+  <div class="tab" onclick="showTab('cpu', 'tuning', this)">Tuning</div>
+</div>
+
+  <div id="cpu-cpu_overview" class="section active">
+  <h3>CPU usage — quick overview</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">top</span>
+      <a href="https://man7.org/linux/man-pages/man1/top.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Real-time view of CPU usage, load average, and top processes</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">top</div><div class="ex-comment"># Interactive real-time view</div>
+        <div class="ex-cmd">top -d 1</div><div class="ex-comment"># Refresh every 1 second</div>
+        <div class="ex-cmd">top -p 1234</div><div class="ex-comment"># Monitor specific PID</div>
+        <div class="ex-cmd">top -u www-data</div><div class="ex-comment"># Filter by user</div>
+        <div class="ex-cmd">top -b -n 1</div><div class="ex-comment"># Batch mode, single snapshot (good for scripts)</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Key shortcuts inside top</div>
+        <div class="ex-cmd">P</div><div class="ex-comment"># Sort by CPU usage</div>
+        <div class="ex-cmd">M</div><div class="ex-comment"># Sort by memory usage</div>
+        <div class="ex-cmd">1</div><div class="ex-comment"># Toggle per-CPU breakdown</div>
+        <div class="ex-cmd">k</div><div class="ex-comment"># Kill a process by PID</div>
+        <div class="ex-cmd">q</div><div class="ex-comment"># Quit</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">htop <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Enhanced interactive process viewer with color, graphs, and mouse support</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">htop</div><div class="ex-comment"># Interactive view (install: apt install htop)</div>
+        <div class="ex-cmd">htop -u postgres</div><div class="ex-comment"># Filter by user</div>
+        <div class="ex-cmd">htop -p 1234,5678</div><div class="ex-comment"># Monitor specific PIDs</div>
+        <div class="ex-cmd">htop -d 5</div><div class="ex-comment"># Refresh delay in tenths of a second</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Key shortcuts inside htop</div>
+        <div class="ex-cmd">F6</div><div class="ex-comment"># Sort by column</div>
+        <div class="ex-cmd">F5</div><div class="ex-comment"># Toggle tree view (process hierarchy)</div>
+        <div class="ex-cmd">F4</div><div class="ex-comment"># Filter processes by name</div>
+        <div class="ex-cmd">Space</div><div class="ex-comment"># Tag process (multi-select)</div>
+        <div class="ex-cmd">F9</div><div class="ex-comment"># Send signal to process</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">uptime</span>
+      <a href="https://man7.org/linux/man-pages/man1/uptime.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">System uptime and 1/5/15-minute load averages at a glance</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">uptime</div><div class="ex-comment"># Load avg: 1, 5, 15 min — compare to CPU count</div>
+        <div class="ex-cmd">uptime -p</div><div class="ex-comment"># Human-readable uptime only</div>
+        <div class="ex-cmd">cat /proc/loadavg</div><div class="ex-comment"># Raw load avg + running/total threads</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">vmstat</span>
+      <a href="https://man7.org/linux/man-pages/man8/vmstat.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">System-wide CPU, memory, swap, I/O, and context switch stats</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">vmstat 1</div><div class="ex-comment"># Update every second (first row = since boot)</div>
+        <div class="ex-cmd">vmstat 1 10</div><div class="ex-comment"># 10 samples, 1 second apart</div>
+        <div class="ex-cmd">vmstat -s</div><div class="ex-comment"># Summary statistics table</div>
+        <div class="ex-cmd">vmstat -d</div><div class="ex-comment"># Disk statistics</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Key columns to watch</div>
+        <div class="ex-cmd">r</div><div class="ex-comment"># Processes waiting for CPU (run queue) — high = CPU saturation</div>
+        <div class="ex-cmd">b</div><div class="ex-comment"># Processes in uninterruptible sleep (I/O wait)</div>
+        <div class="ex-cmd">cs</div><div class="ex-comment"># Context switches per second</div>
+        <div class="ex-cmd">us sy id wa</div><div class="ex-comment"># user / system / idle / I/O wait %</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sar <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">System Activity Reporter — historical CPU, memory, I/O data (sysstat package)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">sar 1 5</div><div class="ex-comment"># CPU stats every 1s for 5 samples</div>
+        <div class="ex-cmd">sar -u 1 5</div><div class="ex-comment"># CPU utilization</div>
+        <div class="ex-cmd">sar -r 1 5</div><div class="ex-comment"># Memory utilization</div>
+        <div class="ex-cmd">sar -q 1 5</div><div class="ex-comment"># Run queue and load average</div>
+        <div class="ex-cmd">sar -f /var/log/sysstat/sa01</div><div class="ex-comment"># Read historical data from file</div>
+        <div class="ex-cmd">sar -A</div><div class="ex-comment"># All metrics</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">glances <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">All-in-one monitoring dashboard: CPU, memory, I/O, network in one screen</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">glances</div><div class="ex-comment"># Full dashboard (install: pip install glances)</div>
+        <div class="ex-cmd">glances --web</div><div class="ex-comment"># Web interface on port 61208</div>
+        <div class="ex-cmd">glances -t 2</div><div class="ex-comment"># Refresh interval 2 seconds</div>
+        <div class="ex-cmd">glances --export csv --export-csv-file /tmp/perf.csv</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-cpu_detail" class="section">
+  <h3>CPU detail — per-core, frequency, topology</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">mpstat</span>
+      <a href="https://man7.org/linux/man-pages/man1/mpstat.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Per-CPU utilization breakdown — spot unbalanced load across cores</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">mpstat -P ALL 1</div><div class="ex-comment"># All CPUs, 1-second interval</div>
+        <div class="ex-cmd">mpstat -P 0,1,2 1</div><div class="ex-comment"># Only cores 0, 1, 2</div>
+        <div class="ex-cmd">mpstat 1 5</div><div class="ex-comment"># Aggregate (all CPUs), 5 samples</div>
+        <div class="ex-cmd">mpstat -I ALL 1</div><div class="ex-comment"># Per-CPU interrupt statistics</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lscpu</span>
+      <a href="https://man7.org/linux/man-pages/man1/lscpu.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">CPU topology: sockets, cores, threads, NUMA, cache sizes</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">lscpu</div><div class="ex-comment"># Full CPU info: model, cores, threads, NUMA</div>
+        <div class="ex-cmd">lscpu -e</div><div class="ex-comment"># Per-CPU extended info (CPU, core, socket, NUMA node)</div>
+        <div class="ex-cmd">lscpu --json</div><div class="ex-comment"># JSON output for scripting</div>
+        <div class="ex-cmd">cat /proc/cpuinfo</div><div class="ex-comment"># Raw per-core CPU info from kernel</div>
+        <div class="ex-cmd">nproc</div><div class="ex-comment"># Number of processing units available</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">cpufreq-info / cpupower</span>
+      <a href="https://www.kernel.org/doc/html/latest/admin-guide/pm/cpufreq.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">CPU frequency scaling: current freq, governor, min/max limits</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">cpupower frequency-info</div><div class="ex-comment"># Current freq and governor for all CPUs</div>
+        <div class="ex-cmd">cpupower frequency-set -g performance</div><div class="ex-comment"># Set performance governor</div>
+        <div class="ex-cmd">cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor</div>
+        <div class="ex-cmd">cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq</div><div class="ex-comment"># Current freq per core</div>
+        <div class="ex-cmd">turbostat --interval 1</div><div class="ex-comment"># Per-core freq, C-states, power (Intel)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">pidstat</span>
+      <a href="https://man7.org/linux/man-pages/man1/pidstat.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Per-process CPU, memory, I/O stats — like top but scriptable</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">pidstat 1</div><div class="ex-comment"># All active processes, 1-second interval</div>
+        <div class="ex-cmd">pidstat -p 1234 1</div><div class="ex-comment"># Single process by PID</div>
+        <div class="ex-cmd">pidstat -u -r -d 1</div><div class="ex-comment"># CPU + memory + disk for all processes</div>
+        <div class="ex-cmd">pidstat -t 1</div><div class="ex-comment"># Per-thread stats</div>
+        <div class="ex-cmd">pidstat -C nginx 1</div><div class="ex-comment"># Filter by process name</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">taskset / numactl</span>
+      <a href="https://man7.org/linux/man-pages/man1/taskset.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Pin processes to specific CPUs or NUMA nodes for performance isolation</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">taskset -cp 1234</div><div class="ex-comment"># Show CPU affinity of PID 1234</div>
+        <div class="ex-cmd">taskset -cp 0,1 1234</div><div class="ex-comment"># Pin PID 1234 to cores 0 and 1</div>
+        <div class="ex-cmd">taskset -c 2 ./myapp</div><div class="ex-comment"># Launch app pinned to core 2</div>
+        <div class="ex-cmd">numactl --hardware</div><div class="ex-comment"># Show NUMA topology</div>
+        <div class="ex-cmd">numactl --cpunodebind=0 --membind=0 ./myapp</div><div class="ex-comment"># Run on NUMA node 0</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">stress / stress-ng <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Generate synthetic CPU/memory/I/O load for testing and benchmarking</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">stress --cpu 4 --timeout 30</div><div class="ex-comment"># Load 4 CPU workers for 30s</div>
+        <div class="ex-cmd">stress-ng --cpu 0 --cpu-method matrixprod -t 60s</div><div class="ex-comment"># All cores, matrix multiply</div>
+        <div class="ex-cmd">stress-ng --vm 2 --vm-bytes 1G -t 30s</div><div class="ex-comment"># 2 workers, 1G memory each</div>
+        <div class="ex-cmd">stress-ng --metrics-brief --cpu 4 -t 10s</div><div class="ex-comment"># With performance metrics</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-memory" class="section">
+  <h3>Memory usage and analysis</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">free</span>
+      <a href="https://man7.org/linux/man-pages/man1/free.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Quick summary of RAM and swap usage — most common first check</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">free -h</div><div class="ex-comment"># Human-readable (GB/MB)</div>
+        <div class="ex-cmd">free -m</div><div class="ex-comment"># In megabytes</div>
+        <div class="ex-cmd">free -s 2</div><div class="ex-comment"># Refresh every 2 seconds</div>
+        <div class="ex-cmd">watch -n 1 free -h</div><div class="ex-comment"># Continuous watch</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Reading the output</div>
+        <div class="ex-cmd">available</div><div class="ex-comment"># Memory actually usable by new processes (most important)</div>
+        <div class="ex-cmd">buff/cache</div><div class="ex-comment"># Kernel cache — reclaimable if needed, not a problem</div>
+        <div class="ex-cmd">Swap used > 0</div><div class="ex-comment"># Warning: RAM pressure, kernel is swapping</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">/proc/meminfo</span>
+      <a href="https://man7.org/linux/man-pages/man5/proc.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Detailed kernel memory breakdown: huge pages, slabs, page tables</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">cat /proc/meminfo</div><div class="ex-comment"># Full memory map from kernel</div>
+        <div class="ex-cmd">grep -i huge /proc/meminfo</div><div class="ex-comment"># Huge pages info</div>
+        <div class="ex-cmd">grep -E 'MemFree|MemAvail|SwapUsed|Dirty' /proc/meminfo</div>
+        <div class="ex-cmd">grep Slab /proc/meminfo</div><div class="ex-comment"># Kernel slab allocator usage</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">pmap</span>
+      <a href="https://man7.org/linux/man-pages/man1/pmap.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Memory map of a process — see shared libs, heap, stack sizes</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">pmap 1234</div><div class="ex-comment"># Memory map of PID 1234</div>
+        <div class="ex-cmd">pmap -x 1234</div><div class="ex-comment"># Extended output (RSS, dirty pages)</div>
+        <div class="ex-cmd">pmap -d 1234</div><div class="ex-comment"># Device format</div>
+        <div class="ex-cmd">pmap -x 1234 | tail -1</div><div class="ex-comment"># Total RSS for the process</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">smem <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Accurate per-process memory: USS, PSS, RSS accounting for shared memory</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">smem -r</div><div class="ex-comment"># Sort by RSS descending</div>
+        <div class="ex-cmd">smem -s pss -r</div><div class="ex-comment"># Sort by PSS (proportional set size)</div>
+        <div class="ex-cmd">smem -u</div><div class="ex-comment"># Aggregate per user</div>
+        <div class="ex-cmd">smem -P nginx</div><div class="ex-comment"># Filter by process name</div>
+        <div class="ex-cmd">smem --pie name -s rss</div><div class="ex-comment"># Pie chart by process name</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Key metrics</div>
+        <div class="ex-cmd">USS</div><div class="ex-comment"># Unique Set Size — memory only this process uses</div>
+        <div class="ex-cmd">PSS</div><div class="ex-comment"># Proportional Set Size — most accurate for total usage</div>
+        <div class="ex-cmd">RSS</div><div class="ex-comment"># Resident Set Size — inflated if sharing lots of libs</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">slabtop</span>
+      <a href="https://man7.org/linux/man-pages/man1/slabtop.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Kernel slab cache usage in real time — diagnose kernel memory leaks</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">slabtop</div><div class="ex-comment"># Interactive slab cache viewer</div>
+        <div class="ex-cmd">slabtop -s c</div><div class="ex-comment"># Sort by cache size</div>
+        <div class="ex-cmd">cat /proc/slabinfo</div><div class="ex-comment"># Raw slab data</div>
+        <div class="ex-cmd">slabtop -o</div><div class="ex-comment"># One-shot output (non-interactive)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">valgrind / heaptrack <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Detect memory leaks, invalid accesses, and heap profiling in applications</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">valgrind --leak-check=full ./myapp</div><div class="ex-comment"># Full memory leak report</div>
+        <div class="ex-cmd">valgrind --tool=massif ./myapp</div><div class="ex-comment"># Heap profiling</div>
+        <div class="ex-cmd">ms_print massif.out.* | head -30</div><div class="ex-comment"># Analyze massif output</div>
+        <div class="ex-cmd">heaptrack ./myapp</div><div class="ex-comment"># Fast heap profiler (lighter than valgrind)</div>
+        <div class="ex-cmd">heaptrack_print heaptrack.myapp.*.gz</div><div class="ex-comment"># Print heap analysis</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">swap diagnostics</span>
+      <a href="https://man7.org/linux/man-pages/man8/swapon.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Identify what is using swap and how to reduce pressure</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">swapon --show</div><div class="ex-comment"># Show all swap devices and usage</div>
+        <div class="ex-cmd">cat /proc/*/status | grep -E 'Name|VmSwap' | paste - -</div><div class="ex-comment"># Swap per process</div>
+        <div class="ex-cmd">cat /proc/sys/vm/swappiness</div><div class="ex-comment"># Current swappiness (default 60)</div>
+        <div class="ex-cmd">sysctl -w vm.swappiness=10</div><div class="ex-comment"># Reduce swapping aggressiveness</div>
+        <div class="ex-cmd">swapoff -a && swapon -a</div><div class="ex-comment"># Flush swap (WARNING: needs enough free RAM)</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-processes" class="section">
+  <h3>Process inspection and management</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ps</span>
+      <a href="https://man7.org/linux/man-pages/man1/ps.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Snapshot of running processes with configurable columns</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ps aux</div><div class="ex-comment"># All processes, BSD style</div>
+        <div class="ex-cmd">ps aux --sort=-%cpu | head -10</div><div class="ex-comment"># Top 10 by CPU</div>
+        <div class="ex-cmd">ps aux --sort=-%mem | head -10</div><div class="ex-comment"># Top 10 by memory</div>
+        <div class="ex-cmd">ps -eo pid,ppid,cmd,%cpu,%mem --sort=-%cpu</div><div class="ex-comment"># Custom columns</div>
+        <div class="ex-cmd">ps -ef | grep nginx</div><div class="ex-comment"># Full format, filter by name</div>
+        <div class="ex-cmd">ps -p 1234 -o pid,vsz,rss,pmem,comm</div><div class="ex-comment"># Memory info for PID</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">pgrep / pkill</span>
+      <a href="https://man7.org/linux/man-pages/man1/pgrep.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Find or signal processes by name, user, or other criteria</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">pgrep nginx</div><div class="ex-comment"># PIDs of all nginx processes</div>
+        <div class="ex-cmd">pgrep -u postgres</div><div class="ex-comment"># PIDs owned by user postgres</div>
+        <div class="ex-cmd">pgrep -la python</div><div class="ex-comment"># PIDs and full command lines</div>
+        <div class="ex-cmd">pkill -9 zombie_app</div><div class="ex-comment"># Force kill by name</div>
+        <div class="ex-cmd">pkill -u olduser</div><div class="ex-comment"># Kill all processes by user</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nice / renice</span>
+      <a href="https://man7.org/linux/man-pages/man1/nice.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Set or change process scheduling priority (-20 highest, 19 lowest)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nice -n 10 ./batch_job.sh</div><div class="ex-comment"># Launch with lower priority</div>
+        <div class="ex-cmd">nice -n -5 ./realtime_app</div><div class="ex-comment"># Higher priority (requires root)</div>
+        <div class="ex-cmd">renice -n 15 -p 1234</div><div class="ex-comment"># Lower priority of running process</div>
+        <div class="ex-cmd">renice -n -10 -u postgres</div><div class="ex-comment"># Raise priority for all postgres processes</div>
+        <div class="ex-cmd">ps -eo pid,ni,comm | grep -v " 0 "</div><div class="ex-comment"># Show non-default niceness</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">strace <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Trace system calls made by a process — diagnose hangs and slowdowns</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">strace -p 1234</div><div class="ex-comment"># Attach to running process</div>
+        <div class="ex-cmd">strace -p 1234 -e trace=open,read,write</div><div class="ex-comment"># Filter syscalls</div>
+        <div class="ex-cmd">strace -c ./myapp</div><div class="ex-comment"># Count syscalls and show summary</div>
+        <div class="ex-cmd">strace -T -p 1234</div><div class="ex-comment"># Show time spent in each syscall</div>
+        <div class="ex-cmd">strace -f -p 1234</div><div class="ex-comment"># Follow child processes (fork)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lsof</span>
+      <a href="https://man7.org/linux/man-pages/man8/lsof.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">List open files, sockets, pipes for any process</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">lsof -p 1234</div><div class="ex-comment"># All open files for PID 1234</div>
+        <div class="ex-cmd">lsof -p 1234 | wc -l</div><div class="ex-comment"># Count open file descriptors</div>
+        <div class="ex-cmd">lsof -u postgres</div><div class="ex-comment"># All files opened by postgres user</div>
+        <div class="ex-cmd">lsof /var/log/app.log</div><div class="ex-comment"># Which process has this file open</div>
+        <div class="ex-cmd">cat /proc/sys/fs/file-nr</div><div class="ex-comment"># System-wide file descriptor usage</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-load" class="section">
+  <h3>Load average and CPU scheduler</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">w / who</span>
+      <a href="https://man7.org/linux/man-pages/man1/w.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Logged-in users and their current load contributions</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">w</div><div class="ex-comment"># Who is logged in and what they're running</div>
+        <div class="ex-cmd">who -b</div><div class="ex-comment"># Last system boot time</div>
+        <div class="ex-cmd">last reboot | head -5</div><div class="ex-comment"># Recent reboots</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">chrt</span>
+      <a href="https://man7.org/linux/man-pages/man1/chrt.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Get or set real-time scheduling policy for a process (SCHED_FIFO, RR)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">chrt -p 1234</div><div class="ex-comment"># Show scheduling policy of PID 1234</div>
+        <div class="ex-cmd">chrt -f -p 50 1234</div><div class="ex-comment"># Set SCHED_FIFO priority 50 (requires root)</div>
+        <div class="ex-cmd">chrt -r 10 ./realtime_app</div><div class="ex-comment"># Launch with SCHED_RR priority 10</div>
+        <div class="ex-cmd">chrt -o -p 0 1234</div><div class="ex-comment"># Set SCHED_OTHER (normal CFS)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">schedtool <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Query and set CPU affinity and scheduling parameters</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">schedtool 1234</div><div class="ex-comment"># Show scheduling info for PID</div>
+        <div class="ex-cmd">schedtool -B 1234</div><div class="ex-comment"># Set SCHED_BATCH (background batch job)</div>
+        <div class="ex-cmd">schedtool -I -p 20 1234</div><div class="ex-comment"># SCHED_FIFO real-time priority 20</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">cgroups (cgroup v2)</span>
+      <a href="https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Limit and account CPU/memory usage per group of processes</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">systemctl status user.slice</div><div class="ex-comment"># cgroup usage via systemd</div>
+        <div class="ex-cmd">systemd-cgtop</div><div class="ex-comment"># Real-time cgroup resource usage</div>
+        <div class="ex-cmd">cat /sys/fs/cgroup/memory.current</div><div class="ex-comment"># Current memory usage of cgroup</div>
+        <div class="ex-cmd">cat /sys/fs/cgroup/cpu.stat</div><div class="ex-comment"># CPU usage stats of cgroup</div>
+        <div class="ex-cmd">systemctl set-property myservice.service CPUQuota=50%</div><div class="ex-comment"># Limit service to 50% CPU</div>
+        <div class="ex-cmd">systemctl set-property myservice.service MemoryMax=512M</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">irqbalance / /proc/interrupts</span>
+      <a href="https://github.com/Irqbalance/irqbalance" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Inspect and balance hardware interrupt distribution across CPUs</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">cat /proc/interrupts</div><div class="ex-comment"># IRQ counts per CPU</div>
+        <div class="ex-cmd">watch -n 1 'cat /proc/interrupts | head -20'</div>
+        <div class="ex-cmd">systemctl status irqbalance</div><div class="ex-comment"># Is IRQ balancing active?</div>
+        <div class="ex-cmd">cat /proc/softirqs</div><div class="ex-comment"># Software interrupt stats per CPU</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-io" class="section">
+  <h3>I/O and disk performance</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iostat <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Per-device I/O throughput, utilization, and wait times</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iostat -x 1</div><div class="ex-comment"># Extended stats every second (key command)</div>
+        <div class="ex-cmd">iostat -x 1 5</div><div class="ex-comment"># 5 samples</div>
+        <div class="ex-cmd">iostat -d sda 1</div><div class="ex-comment"># Only device sda</div>
+        <div class="ex-cmd">iostat -h 1</div><div class="ex-comment"># Human-readable units</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">Key columns</div>
+        <div class="ex-cmd">%util</div><div class="ex-comment"># Disk utilization — near 100% = saturated</div>
+        <div class="ex-cmd">await</div><div class="ex-comment"># Average I/O wait time (ms) — high = slow disk or queuing</div>
+        <div class="ex-cmd">r/s w/s</div><div class="ex-comment"># Read/write operations per second</div>
+        <div class="ex-cmd">rMB/s wMB/s</div><div class="ex-comment"># Throughput in MB/s</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iotop <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Top-like view of disk I/O per process — find I/O-heavy processes instantly</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iotop</div><div class="ex-comment"># Interactive I/O monitor (requires root)</div>
+        <div class="ex-cmd">iotop -o</div><div class="ex-comment"># Show only processes doing I/O</div>
+        <div class="ex-cmd">iotop -b -n 5</div><div class="ex-comment"># Batch mode, 5 iterations</div>
+        <div class="ex-cmd">iotop -p 1234</div><div class="ex-comment"># Single process</div>
+        <div class="ex-cmd">iotop -u postgres</div><div class="ex-comment"># Filter by user</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">fio <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Flexible I/O benchmarking — test sequential, random, and mixed workloads</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">fio --name=randread --rw=randread --bs=4k --size=1G --numjobs=4</div>
+        <div class="ex-cmd">fio --name=seqwrite --rw=write --bs=1M --size=2G</div><div class="ex-comment"># Sequential write</div>
+        <div class="ex-cmd">fio --name=randrw --rw=randrw --bs=4k --size=512M --rwmixread=70</div><div class="ex-comment"># 70% read mixed</div>
+        <div class="ex-cmd">fio --name=latency --rw=randread --bs=512 --iodepth=1 --size=256M</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">dd</span>
+      <a href="https://man7.org/linux/man-pages/man1/dd.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Quick sequential read/write speed test — simple but effective baseline</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">dd if=/dev/zero of=/tmp/test bs=1M count=1024 oflag=direct</div><div class="ex-comment"># Write speed (direct I/O)</div>
+        <div class="ex-cmd">dd if=/tmp/test of=/dev/null bs=1M iflag=direct</div><div class="ex-comment"># Read speed</div>
+        <div class="ex-cmd">dd if=/dev/urandom of=/tmp/test bs=1M count=256 status=progress</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">blktrace / blkparse <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Block I/O tracing — see exact I/O requests, queuing, and dispatch times</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">blktrace -d /dev/sda -o trace</div><div class="ex-comment"># Capture block trace</div>
+        <div class="ex-cmd">blkparse -i trace -d trace.bin</div><div class="ex-comment"># Parse trace</div>
+        <div class="ex-cmd">btt -i trace.bin</div><div class="ex-comment"># Block trace analysis (latency, queue depth)</div>
+        <div class="ex-cmd">cat /sys/block/sda/queue/scheduler</div><div class="ex-comment"># Current I/O scheduler</div>
+        <div class="ex-cmd">echo mq-deadline > /sys/block/sda/queue/scheduler</div><div class="ex-comment"># Change scheduler</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-profiling" class="section">
+  <h3>CPU profiling and eBPF tracing</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">perf <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Linux performance counter tool — CPU cycles, cache misses, function profiling</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">perf top</div><div class="ex-comment"># Live CPU hotspots (like top for functions)</div>
+        <div class="ex-cmd">perf record -g ./myapp</div><div class="ex-comment"># Record with call graph</div>
+        <div class="ex-cmd">perf report</div><div class="ex-comment"># Interactive report from perf.data</div>
+        <div class="ex-cmd">perf stat ./myapp</div><div class="ex-comment"># Hardware counters: cycles, instructions, cache misses</div>
+        <div class="ex-cmd">perf stat -e cache-misses,cache-references ./myapp</div>
+        <div class="ex-cmd">perf record -F 99 -p 1234 -g -- sleep 10</div><div class="ex-comment"># Sample at 99Hz for 10s</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">FlameGraph</span>
+      <a href="https://www.brendangregg.com/flamegraphs.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Visualize perf profiles as interactive flame graphs (Brendan Gregg)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">perf record -F 99 -a -g -- sleep 30</div><div class="ex-comment"># Capture all CPUs for 30s</div>
+        <div class="ex-cmd">perf script > out.perf</div>
+        <div class="ex-cmd">stackcollapse-perf.pl out.perf > out.folded</div>
+        <div class="ex-cmd">flamegraph.pl out.folded > flamegraph.svg</div><div class="ex-comment"># Open SVG in browser</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">bpftrace <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">High-level eBPF tracing language for custom kernel and userspace probes</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">bpftrace -e 'profile:hz:99 { @[comm] = count(); }'</div><div class="ex-comment"># CPU time per process (sampling)</div>
+        <div class="ex-cmd">bpftrace -e 'kprobe:do_sys_open { printf("%s %s\n", comm, str(arg1)); }'</div><div class="ex-comment"># Trace file opens</div>
+        <div class="ex-cmd">bpftrace -e 'tracepoint:sched:sched_switch { @[prev_comm] = count(); }'</div><div class="ex-comment"># Context switches per process</div>
+        <div class="ex-cmd">bpftrace /usr/share/bpftrace/tools/runqlat.bt</div><div class="ex-comment"># Run queue latency histogram</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">BCC tools <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Pre-built eBPF tools from BPF Compiler Collection (BCC)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">runqlat</div><div class="ex-comment"># Scheduler run queue latency histogram</div>
+        <div class="ex-cmd">cpudist</div><div class="ex-comment"># On-CPU time distribution per process</div>
+        <div class="ex-cmd">offcputime -p 1234 10</div><div class="ex-comment"># Off-CPU time (blocking) for PID, 10s</div>
+        <div class="ex-cmd">biolatency</div><div class="ex-comment"># Block I/O latency histogram</div>
+        <div class="ex-cmd">cachestat 1</div><div class="ex-comment"># Page cache hit/miss stats</div>
+        <div class="ex-cmd">memleak -p 1234</div><div class="ex-comment"># Detect memory leaks in process</div>
+        <div class="ex-cmd">funclatency 'do_sys_open' 1</div><div class="ex-comment"># Latency histogram for a kernel function</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">gprof / callgrind</span>
+      <a href="https://valgrind.org/docs/manual/cl-manual.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Application-level profiling — find hotspots in your own code</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">gcc -pg -o myapp myapp.c && ./myapp && gprof myapp gmon.out</div>
+        <div class="ex-cmd">valgrind --tool=callgrind ./myapp</div><div class="ex-comment"># Detailed call graph profiling</div>
+        <div class="ex-cmd">callgrind_annotate callgrind.out.*</div><div class="ex-comment"># Annotated source with costs</div>
+        <div class="ex-cmd">kcachegrind callgrind.out.*</div><div class="ex-comment"># GUI viewer for callgrind output</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cpu-tuning" class="section">
+  <h3>Kernel tuning and system limits</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sysctl (CPU/memory)</span>
+      <a href="https://man7.org/linux/man-pages/man8/sysctl.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Key kernel parameters that affect CPU and memory performance</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Memory parameters</div>
+        <div class="ex-cmd">sysctl vm.swappiness</div><div class="ex-comment"># Swap aggressiveness (0-100, lower = prefer RAM)</div>
+        <div class="ex-cmd">sysctl vm.dirty_ratio</div><div class="ex-comment"># % RAM for dirty pages before forced writeback</div>
+        <div class="ex-cmd">sysctl vm.dirty_background_ratio</div><div class="ex-comment"># % RAM for background writeback start</div>
+        <div class="ex-cmd">sysctl vm.overcommit_memory</div><div class="ex-comment"># 0=heuristic, 1=always, 2=never</div>
+        <div class="ex-cmd">sysctl -w vm.drop_caches=3</div><div class="ex-comment"># Drop page/slab/inode caches (testing only)</div>
+      </div>
+      <div class="example">
+        <div class="ex-label">CPU/scheduler parameters</div>
+        <div class="ex-cmd">sysctl kernel.sched_min_granularity_ns</div><div class="ex-comment"># CFS min scheduling granularity</div>
+        <div class="ex-cmd">sysctl kernel.sched_migration_cost_ns</div><div class="ex-comment"># Cost to migrate task between CPUs</div>
+        <div class="ex-cmd">sysctl kernel.pid_max</div><div class="ex-comment"># Max PID value (default 32768)</div>
+        <div class="ex-cmd">sysctl kernel.perf_event_paranoid</div><div class="ex-comment"># perf access level (0=all, 2=restricted)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ulimit</span>
+      <a href="https://man7.org/linux/man-pages/man3/ulimit.3.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Per-process resource limits: file descriptors, stack size, max memory</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ulimit -a</div><div class="ex-comment"># Show all limits for current shell</div>
+        <div class="ex-cmd">ulimit -n</div><div class="ex-comment"># Max open file descriptors</div>
+        <div class="ex-cmd">ulimit -n 65536</div><div class="ex-comment"># Increase FD limit for current session</div>
+        <div class="ex-cmd">ulimit -s</div><div class="ex-comment"># Stack size limit</div>
+        <div class="ex-cmd">ulimit -v $((2*1024*1024))</div><div class="ex-comment"># Limit virtual memory to 2GB</div>
+        <div class="ex-cmd">cat /proc/1234/limits</div><div class="ex-comment"># Limits of a specific running process</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">hugepages</span>
+      <a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Configure huge pages to reduce TLB pressure for memory-intensive apps</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">grep -i huge /proc/meminfo</div><div class="ex-comment"># Current huge page usage</div>
+        <div class="ex-cmd">cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages</div>
+        <div class="ex-cmd">echo 512 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages</div><div class="ex-comment"># Reserve 512 x 2MB pages</div>
+        <div class="ex-cmd">cat /sys/kernel/mm/transparent_hugepage/enabled</div><div class="ex-comment"># THP status</div>
+        <div class="ex-cmd">echo never > /sys/kernel/mm/transparent_hugepage/enabled</div><div class="ex-comment"># Disable THP (DBs often prefer this)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">numastat / numactl</span>
+      <a href="https://man7.org/linux/man-pages/man8/numactl.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">NUMA memory allocation stats — detect cross-node memory access penalties</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">numastat</div><div class="ex-comment"># NUMA hit/miss stats per node</div>
+        <div class="ex-cmd">numastat -m</div><div class="ex-comment"># Memory usage per NUMA node</div>
+        <div class="ex-cmd">numastat -p 1234</div><div class="ex-comment"># NUMA stats for specific process</div>
+        <div class="ex-cmd">numactl --hardware</div><div class="ex-comment"># NUMA topology and distances</div>
+        <div class="ex-cmd">numactl --interleave=all ./myapp</div><div class="ex-comment"># Interleave memory across NUMA nodes</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">tuned / tuned-adm</span>
+      <a href="https://tuned-project.org/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Apply pre-built tuning profiles (latency, throughput, power-save)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">tuned-adm list</div><div class="ex-comment"># Available profiles</div>
+        <div class="ex-cmd">tuned-adm active</div><div class="ex-comment"># Currently active profile</div>
+        <div class="ex-cmd">tuned-adm profile throughput-performance</div><div class="ex-comment"># High-throughput servers</div>
+        <div class="ex-cmd">tuned-adm profile latency-performance</div><div class="ex-comment"># Low-latency applications</div>
+        <div class="ex-cmd">tuned-adm profile powersave</div><div class="ex-comment"># Battery / energy saving</div>
+        <div class="ex-cmd">tuned-adm recommend</div><div class="ex-comment"># Recommend profile for this hardware</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">OOM killer diagnostics</span>
+      <a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/concepts.html#oom-killer" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Understand and control how the kernel kills processes under memory pressure</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">dmesg | grep -i 'oom\|killed process'</div><div class="ex-comment"># Find OOM kills in kernel log</div>
+        <div class="ex-cmd">journalctl -k | grep -i oom</div><div class="ex-comment"># OOM events via journald</div>
+        <div class="ex-cmd">cat /proc/1234/oom_score</div><div class="ex-comment"># OOM score of a process (higher = more likely to be killed)</div>
+        <div class="ex-cmd">echo -17 > /proc/1234/oom_score_adj</div><div class="ex-comment"># Protect process from OOM killer</div>
+        <div class="ex-cmd">echo 1000 > /proc/1234/oom_score_adj</div><div class="ex-comment"># Make process OOM-killed first</div>
+        <div class="ex-cmd">sysctl -w vm.panic_on_oom=0</div><div class="ex-comment"># Don't panic on OOM, let killer run</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== NETWORK ===== -->
+<div class="chapter">
+  <div class="chapter-title">🐧 Linux Network Troubleshooting</div>
+  <div class="tabs">
+  <div class="tab active" onclick="showTab('net', 'interfaces', this)">Interfaces</div>
+  <div class="tab" onclick="showTab('net', 'conectividad', this)">Connectivity</div>
+  <div class="tab" onclick="showTab('net', 'dns', this)">DNS</div>
+  <div class="tab" onclick="showTab('net', 'puertos', this)">Ports</div>
+  <div class="tab" onclick="showTab('net', 'rutas', this)">Routes</div>
+  <div class="tab" onclick="showTab('net', 'trafico', this)">Traffic</div>
+  <div class="tab" onclick="showTab('net', 'firewall', this)">Firewall</div>
+  <div class="tab" onclick="showTab('net', 'logs', this)">Logs</div>
+  <div class="tab" onclick="showTab('net', 'vpn', this)">VPN/Tunnels</div>
+  <div class="tab" onclick="showTab('net', 'performance', this)">Net Performance</div>
+  <div class="tab" onclick="showTab('net', 'wifi', this)">Wi-Fi</div>
+</div>
+
+  <div id="net-interfaces" class="section active">
+  <h3>Network interfaces</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip a</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-address.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Shows all interfaces with IPs, state and MAC address</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip a</div><div class="ex-comment"># All interfaces</div>
+        <div class="ex-cmd">ip a show eth0</div><div class="ex-comment"># Only eth0 interface</div>
+        <div class="ex-cmd">ip -4 a</div><div class="ex-comment"># IPv4 only</div>
+        <div class="ex-cmd">ip -6 a</div><div class="ex-comment"># IPv6 only</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip link</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-link.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Interface state (UP/DOWN), MTU, flags</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip link show</div>
+        <div class="ex-cmd">ip link set eth0 up</div><div class="ex-comment"># Bring interface up</div>
+        <div class="ex-cmd">ip link set eth0 down</div>
+        <div class="ex-cmd">ip link set eth0 mtu 9000</div><div class="ex-comment"># Change MTU (jumbo frames)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ifconfig <span class="badge b-dep">deprecated</span></span>
+      <span class="cmd-desc">Classic alternative to ip a (net-tools package)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ifconfig</div>
+        <div class="ex-cmd">ifconfig eth0</div>
+        <div class="ex-cmd">ifconfig eth0 up</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ethtool</span>
+      <a href="https://man7.org/linux/man-pages/man8/ethtool.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Speed, duplex, driver state and NIC hardware info</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ethtool eth0</div><div class="ex-comment"># General info (speed, link detected)</div>
+        <div class="ex-cmd">ethtool -i eth0</div><div class="ex-comment"># Driver info</div>
+        <div class="ex-cmd">ethtool -S eth0</div><div class="ex-comment"># Driver statistics</div>
+        <div class="ex-cmd">ethtool -t eth0</div><div class="ex-comment"># Hardware self-test</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip addr add/del</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-address.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Add or remove IP addresses on an interface</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip addr add 192.168.1.100/24 dev eth0</div>
+        <div class="ex-cmd">ip addr del 192.168.1.100/24 dev eth0</div>
+        <div class="ex-cmd">ip addr flush dev eth0</div><div class="ex-comment"># Flush all IPs from interface</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nmcli <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Full network management with NetworkManager from CLI</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nmcli device status</div><div class="ex-comment"># Status of all devices</div>
+        <div class="ex-cmd">nmcli connection show</div><div class="ex-comment"># Saved connections</div>
+        <div class="ex-cmd">nmcli device connect eth0</div>
+        <div class="ex-cmd">nmcli networking off</div><div class="ex-comment"># Disable all networking</div>
+        <div class="ex-cmd">nmcli general status</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lshw -class network</span>
+      <a href="https://man7.org/linux/man-pages/man1/lshw.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Detailed info on installed network hardware</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">lshw -class network</div><div class="ex-comment"># NIC info (requires root)</div>
+        <div class="ex-cmd">lshw -class network -short</div><div class="ex-comment"># Short format</div>
+        <div class="ex-cmd">lspci | grep -i net</div><div class="ex-comment"># List PCI network cards</div>
+        <div class="ex-cmd">lsusb | grep -i net</div><div class="ex-comment"># List USB network adapters</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-conectividad" class="section">
+  <h3>Verify connectivity</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ping</span>
+      <a href="https://man7.org/linux/man-pages/man8/ping.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Check reachability and latency to a host</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ping 8.8.8.8</div><div class="ex-comment"># Ping Google DNS (internet)</div>
+        <div class="ex-cmd">ping -c 4 192.168.1.1</div><div class="ex-comment"># Only 4 packets</div>
+        <div class="ex-cmd">ping -i 0.2 -s 1400 host</div><div class="ex-comment"># Custom interval and packet size</div>
+        <div class="ex-cmd">ping6 ::1</div><div class="ex-comment"># IPv6 loopback ping</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">traceroute</span>
+      <a href="https://man7.org/linux/man-pages/man8/traceroute.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Trace the packet route to destination, hop by hop</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">traceroute google.com</div>
+        <div class="ex-cmd">traceroute -n 8.8.8.8</div><div class="ex-comment"># Skip DNS resolution (faster)</div>
+        <div class="ex-cmd">traceroute -T -p 80 google.com</div><div class="ex-comment"># Using TCP on port 80</div>
+        <div class="ex-cmd">traceroute6 ipv6.google.com</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">mtr <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Combines ping + traceroute in real time. Great for diagnosing packet loss</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">mtr 8.8.8.8</div><div class="ex-comment"># Interactive mode</div>
+        <div class="ex-cmd">mtr --report google.com</div><div class="ex-comment"># Report mode (non-interactive)</div>
+        <div class="ex-cmd">mtr -n --report-cycles 100 8.8.8.8</div><div class="ex-comment"># 100 cycles without DNS</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">curl / wget</span>
+      <a href="https://curl.se/docs/manpage.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Check HTTP/HTTPS connectivity at the application level</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">curl -I https://google.com</div><div class="ex-comment"># Headers only</div>
+        <div class="ex-cmd">curl -v --resolve google.com:443:8.8.8.8 https://google.com</div>
+        <div class="ex-cmd">curl -w "%{time_total}\n" -o /dev/null -s https://host</div><div class="ex-comment"># Measure total time</div>
+        <div class="ex-cmd">wget -q --spider http://host</div><div class="ex-comment"># Check availability</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">hping3 <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Advanced ping with full control over TCP/UDP/ICMP packets</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">hping3 -S -p 80 192.168.1.1</div><div class="ex-comment"># TCP SYN on port 80</div>
+        <div class="ex-cmd">hping3 -1 192.168.1.1</div><div class="ex-comment"># ICMP ping</div>
+        <div class="ex-cmd">hping3 -2 -p 53 8.8.8.8</div><div class="ex-comment"># UDP to port 53</div>
+        <div class="ex-cmd">hping3 --traceroute -S -p 80 host</div><div class="ex-comment"># TCP traceroute</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">fping</span>
+      <a href="https://fping.org/fping.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Ping multiple hosts in parallel, ideal for full network sweeps</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">fping -a -g 192.168.1.0/24</div><div class="ex-comment"># Live hosts on the network</div>
+        <div class="ex-cmd">fping -c 3 host1 host2 host3</div><div class="ex-comment"># Multi-host ping with 3 cycles</div>
+        <div class="ex-cmd">fping -f hosts.txt</div><div class="ex-comment"># Read hosts from file</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-dns" class="section">
+  <h3>DNS resolution</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">dig <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Detailed DNS query with timing, TTL and server used</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">dig google.com</div><div class="ex-comment"># A record (IPv4)</div>
+        <div class="ex-cmd">dig AAAA google.com</div><div class="ex-comment"># IPv6 record</div>
+        <div class="ex-cmd">dig MX google.com</div><div class="ex-comment"># Mail records</div>
+        <div class="ex-cmd">dig @8.8.8.8 google.com</div><div class="ex-comment"># Query specific server</div>
+        <div class="ex-cmd">dig -x 8.8.8.8</div><div class="ex-comment"># Reverse DNS (PTR)</div>
+        <div class="ex-cmd">dig +short google.com</div><div class="ex-comment"># Just the IP</div>
+        <div class="ex-cmd">dig +trace google.com</div><div class="ex-comment"># Full trace from root servers</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nslookup</span>
+      <a href="https://man7.org/linux/man-pages/man1/nslookup.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Interactive or direct DNS query</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nslookup google.com</div>
+        <div class="ex-cmd">nslookup google.com 8.8.8.8</div>
+        <div class="ex-cmd">nslookup -type=MX google.com</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">resolvectl</span>
+      <a href="https://man7.org/linux/man-pages/man1/resolvectl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">DNS management with systemd-resolved (modern Ubuntu/Debian)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">resolvectl status</div><div class="ex-comment"># View DNS per interface</div>
+        <div class="ex-cmd">resolvectl query google.com</div>
+        <div class="ex-cmd">resolvectl statistics</div><div class="ex-comment"># Cache hits/misses</div>
+        <div class="ex-cmd">resolvectl flush-caches</div><div class="ex-comment"># Flush DNS cache</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">cat /etc/resolv.conf</span>
+      <a href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View DNS servers configured on the system</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Also useful</div>
+        <div class="ex-cmd">cat /etc/hosts</div><div class="ex-comment"># Static local resolution</div>
+        <div class="ex-cmd">cat /etc/nsswitch.conf</div><div class="ex-comment"># Resolution order</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">host</span>
+      <a href="https://man.archlinux.org/man/host.1" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Simple and fast DNS resolution, good for scripts</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">host google.com</div>
+        <div class="ex-cmd">host -t MX google.com</div><div class="ex-comment"># Specific record type</div>
+        <div class="ex-cmd">host 8.8.8.8</div><div class="ex-comment"># Reverse lookup</div>
+        <div class="ex-cmd">host google.com 1.1.1.1</div><div class="ex-comment"># Use Cloudflare server</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">whois</span>
+      <a href="https://man7.org/linux/man-pages/man1/whois.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Domain and IP registration info (ARIN, RIPE, etc.)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">whois google.com</div><div class="ex-comment"># Domain info</div>
+        <div class="ex-cmd">whois 8.8.8.8</div><div class="ex-comment"># Who owns the IP</div>
+        <div class="ex-cmd">whois 192.168.0.0/16</div><div class="ex-comment"># IP block info</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-puertos" class="section">
+  <h3>Ports &amp; connections</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ss <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Active sockets: TCP, UDP, UNIX. Replaces netstat</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ss -tulnp</div><div class="ex-comment"># TCP+UDP LISTEN, no DNS, with PID</div>
+        <div class="ex-cmd">ss -tnp state established</div><div class="ex-comment"># Established connections</div>
+        <div class="ex-cmd">ss -s</div><div class="ex-comment"># Summary statistics</div>
+        <div class="ex-cmd">ss -tnp dst 8.8.8.8</div><div class="ex-comment"># Filter by destination</div>
+        <div class="ex-cmd">ss -lnp sport = :80</div><div class="ex-comment"># What listens on port 80</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">netstat <span class="badge b-dep">deprecated</span></span>
+      <span class="cmd-desc">View connections and ports (classic, net-tools package)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">netstat -tulnp</div><div class="ex-comment"># Equivalent to ss -tulnp</div>
+        <div class="ex-cmd">netstat -an | grep LISTEN</div>
+        <div class="ex-cmd">netstat -s</div><div class="ex-comment"># Per-protocol statistics</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nc (netcat)</span>
+      <a href="https://man7.org/linux/man-pages/man1/ncat.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Test TCP/UDP connectivity to a specific port</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nc -zv 192.168.1.1 22</div><div class="ex-comment"># Check if port 22 is open</div>
+        <div class="ex-cmd">nc -zv host 80 443 8080</div><div class="ex-comment"># Multiple ports</div>
+        <div class="ex-cmd">nc -l 9999</div><div class="ex-comment"># Simple TCP server</div>
+        <div class="ex-cmd">nc -u host 53</div><div class="ex-comment"># UDP connection</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nmap <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Port and service scanning on remote hosts</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nmap 192.168.1.1</div><div class="ex-comment"># Common ports</div>
+        <div class="ex-cmd">nmap -p 1-65535 192.168.1.1</div><div class="ex-comment"># All ports</div>
+        <div class="ex-cmd">nmap -sV -sC 192.168.1.1</div><div class="ex-comment"># Service detection</div>
+        <div class="ex-cmd">nmap -sn 192.168.1.0/24</div><div class="ex-comment"># Live hosts on network</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lsof -i</span>
+      <a href="https://man7.org/linux/man-pages/man8/lsof.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">See which processes have network files open</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">lsof -i</div><div class="ex-comment"># All open network files</div>
+        <div class="ex-cmd">lsof -i :80</div><div class="ex-comment"># What uses port 80</div>
+        <div class="ex-cmd">lsof -i TCP:22</div><div class="ex-comment"># TCP connections to port 22</div>
+        <div class="ex-cmd">lsof -i -n -P | grep LISTEN</div><div class="ex-comment"># Listening ports only</div>
+        <div class="ex-cmd">lsof -p 1234 -i</div><div class="ex-comment"># Network files open by PID 1234</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">openssl s_client</span>
+      <a href="https://www.openssl.org/docs/man3.0/man1/openssl-s_client.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Verify TLS/SSL certificates and HTTPS connections</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">openssl s_client -connect google.com:443</div>
+        <div class="ex-cmd">openssl s_client -connect host:443 | openssl x509 -noout -dates</div><div class="ex-comment"># Certificate expiry date</div>
+        <div class="ex-cmd">echo | openssl s_client -connect host:443 2>/dev/null | openssl x509 -noout -subject</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-rutas" class="section">
+  <h3>Routing table</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip route</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-route.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View and manage the routing table</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip route show</div><div class="ex-comment"># Full table</div>
+        <div class="ex-cmd">ip route get 8.8.8.8</div><div class="ex-comment"># Which route the kernel uses</div>
+        <div class="ex-cmd">ip route add 10.0.0.0/8 via 192.168.1.1</div>
+        <div class="ex-cmd">ip route del default</div>
+        <div class="ex-cmd">ip route add default via 192.168.1.1 dev eth0</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip neigh</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-neighbour.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">ARP table: view neighbors and their MACs</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip neigh show</div><div class="ex-comment"># Full ARP table</div>
+        <div class="ex-cmd">ip neigh flush all</div><div class="ex-comment"># Flush ARP cache</div>
+        <div class="ex-cmd">arp -n</div><div class="ex-comment"># Classic alternative</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">arping</span>
+      <a href="https://man7.org/linux/man-pages/man8/arping.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Detect IP conflicts or test L2 connectivity</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">arping -I eth0 192.168.1.1</div><div class="ex-comment"># ARP ping to gateway</div>
+        <div class="ex-cmd">arping -D -I eth0 192.168.1.50</div><div class="ex-comment"># Detect duplicate IP</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-trafico" class="section">
+  <h3>Traffic capture &amp; analysis</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">tcpdump <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Capture and filter packets in real time from the terminal</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">tcpdump -i eth0</div><div class="ex-comment"># Capture on eth0 interface</div>
+        <div class="ex-cmd">tcpdump -i any port 80</div><div class="ex-comment"># All HTTP traffic</div>
+        <div class="ex-cmd">tcpdump -i eth0 host 192.168.1.1</div>
+        <div class="ex-cmd">tcpdump -i eth0 -w captura.pcap</div><div class="ex-comment"># Save for Wireshark</div>
+        <div class="ex-cmd">tcpdump -r captura.pcap</div><div class="ex-comment"># Read .pcap file</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iftop / nethogs</span>
+      <a href="https://man7.org/linux/man-pages/man8/iftop.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Monitor bandwidth by interface or by process</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iftop -i eth0</div><div class="ex-comment"># BW per connection (interactive)</div>
+        <div class="ex-cmd">nethogs eth0</div><div class="ex-comment"># BW per process</div>
+        <div class="ex-cmd">vnstat -l</div><div class="ex-comment"># Historical statistics</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip -s link</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-link.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">TX/RX packet stats, errors and drops per interface</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip -s link show eth0</div><div class="ex-comment"># Packet counters</div>
+        <div class="ex-cmd">cat /proc/net/dev</div><div class="ex-comment"># Raw kernel stats</div>
+        <div class="ex-cmd">watch -n 1 'ip -s link show eth0'</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ngrep <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Grep over network traffic — search patterns in packet payloads</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ngrep -d eth0 'GET' tcp port 80</div><div class="ex-comment"># HTTP GET requests</div>
+        <div class="ex-cmd">ngrep -d any 'password' port 21</div><div class="ex-comment"># Search within FTP traffic</div>
+        <div class="ex-cmd">ngrep -W byline port 80</div><div class="ex-comment"># Human-readable line-by-line format</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ss -i (info TCP interna)</span>
+      <a href="https://man7.org/linux/man-pages/man8/ss.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View internal TCP metrics: RTT, cwnd, retransmissions per socket</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ss -tin</div><div class="ex-comment"># Internal TCP info (RTT, cwnd, retrans)</div>
+        <div class="ex-cmd">ss -tin dst 8.8.8.8</div><div class="ex-comment"># Only towards specific destination</div>
+        <div class="ex-cmd">ss -tin state established | grep retrans</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-firewall" class="section">
+  <h3>Firewall &amp; filtering</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iptables</span>
+      <a href="https://man7.org/linux/man-pages/man8/iptables.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View and manage kernel firewall rules</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iptables -L -n -v</div><div class="ex-comment"># View all rules</div>
+        <div class="ex-cmd">iptables -L INPUT -n -v --line-numbers</div>
+        <div class="ex-cmd">iptables -t nat -L -n -v</div><div class="ex-comment"># NAT table</div>
+        <div class="ex-cmd">iptables -F</div><div class="ex-comment"># WARNING: flushes all rules</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nft (nftables) <span class="badge b-new">modern</span></span>
+      <span class="cmd-desc">Replaces iptables on modern systems (kernel 3.13+)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nft list ruleset</div><div class="ex-comment"># View all rules</div>
+        <div class="ex-cmd">nft list tables</div>
+        <div class="ex-cmd">nft list chain inet filter input</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ufw</span>
+      <a href="https://manpages.ubuntu.com/manpages/noble/man8/ufw.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Simplified frontend for iptables (Ubuntu/Debian)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ufw status verbose</div>
+        <div class="ex-cmd">ufw allow 22/tcp</div>
+        <div class="ex-cmd">ufw deny 80</div>
+        <div class="ex-cmd">ufw disable</div><div class="ex-comment"># Disable for diagnostics</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">firewall-cmd</span>
+      <a href="https://firewalld.org/documentation/man-pages/firewall-cmd.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Firewalld CLI (RHEL/CentOS/Fedora)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">firewall-cmd --list-all</div>
+        <div class="ex-cmd">firewall-cmd --state</div>
+        <div class="ex-cmd">firewall-cmd --zone=public --list-ports</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-logs" class="section">
+  <h3>System logs</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">journalctl</span>
+      <a href="https://man7.org/linux/man-pages/man1/journalctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">System logs with systemd (kernel, NetworkManager, etc.)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">journalctl -u NetworkManager -f</div><div class="ex-comment"># NM logs in real time</div>
+        <div class="ex-cmd">journalctl -k | grep -i eth</div><div class="ex-comment"># Filtered kernel logs</div>
+        <div class="ex-cmd">journalctl -u systemd-networkd -n 50</div>
+        <div class="ex-cmd">journalctl --since "10 min ago"</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">dmesg</span>
+      <a href="https://man7.org/linux/man-pages/man1/dmesg.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Kernel messages: NIC errors, driver, link events</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">dmesg | grep -i eth</div><div class="ex-comment"># Eventos de la interfaz</div>
+        <div class="ex-cmd">dmesg | grep -i error</div>
+        <div class="ex-cmd">dmesg -w</div><div class="ex-comment"># Real time (watch mode)</div>
+        <div class="ex-cmd">dmesg -T | tail -20</div><div class="ex-comment"># With human-readable timestamps</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sysctl (kernel params)</span>
+      <a href="https://man7.org/linux/man-pages/man8/sysctl.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View and modify kernel network parameters</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">sysctl net.ipv4.ip_forward</div>
+        <div class="ex-cmd">sysctl -a | grep net.core</div>
+        <div class="ex-cmd">sysctl net.ipv4.tcp_congestion_control</div>
+        <div class="ex-cmd">sysctl -w net.ipv4.ip_forward=1</div><div class="ex-comment"># Enable IP forwarding</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">/var/log/syslog y auth.log</span>
+      <a href="https://man7.org/linux/man-pages/man5/syslog.conf.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Traditional system logs and SSH authentication</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">tail -f /var/log/syslog | grep -i network</div>
+        <div class="ex-cmd">grep "Failed password" /var/log/auth.log</div><div class="ex-comment"># Failed SSH login attempts</div>
+        <div class="ex-cmd">grep sshd /var/log/auth.log | tail -20</div>
+        <div class="ex-cmd">last -a | head -20</div><div class="ex-comment"># Recent logins with source IP</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-vpn" class="section">
+  <h3>VPN &amp; tunnels</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">wg / wg-quick <span class="badge b-new">modern</span></span>
+      <span class="cmd-desc">WireGuard: modern, fast VPN with state-of-the-art cryptography</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">wg show</div><div class="ex-comment"># Status of all WG interfaces</div>
+        <div class="ex-cmd">wg show wg0</div><div class="ex-comment"># Status of wg0 interface</div>
+        <div class="ex-cmd">wg-quick up wg0</div><div class="ex-comment"># Bring up tunnel from /etc/wireguard/wg0.conf</div>
+        <div class="ex-cmd">wg-quick down wg0</div>
+        <div class="ex-cmd">wg showconf wg0</div><div class="ex-comment"># Show active tunnel config</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">openvpn</span>
+      <a href="https://openvpn.net/community-resources/reference-manual-for-openvpn-2-6/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">OpenVPN diagnostics and connection</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">openvpn --config client.ovpn</div><div class="ex-comment"># Connect using profile</div>
+        <div class="ex-cmd">systemctl status openvpn@client</div><div class="ex-comment"># Service status</div>
+        <div class="ex-cmd">journalctl -u openvpn@client -f</div><div class="ex-comment"># Real-time logs</div>
+        <div class="ex-cmd">ip tuntap show</div><div class="ex-comment"># View active tun/tap interfaces</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ssh tunneling</span>
+      <a href="https://man7.org/linux/man-pages/man1/ssh.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">SSH tunnels: local, remote and dynamic (SOCKS proxy)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ssh -L 8080:dest:80 user@jump</div><div class="ex-comment"># Local tunnel</div>
+        <div class="ex-cmd">ssh -R 9090:localhost:3000 user@remote</div><div class="ex-comment"># Remote tunnel</div>
+        <div class="ex-cmd">ssh -D 1080 user@host</div><div class="ex-comment"># Dynamic SOCKS5 proxy</div>
+        <div class="ex-cmd">ssh -N -f -L 5432:db:5432 user@bastion</div><div class="ex-comment"># Background tunnel</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ip tunnel / ip gre</span>
+      <a href="https://man7.org/linux/man-pages/man8/ip-tunnel.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">GRE, IPIP and other kernel-level tunnel management</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ip tunnel show</div><div class="ex-comment"># View active tunnels</div>
+        <div class="ex-cmd">ip tunnel add gre1 mode gre remote 10.0.0.2 local 10.0.0.1</div>
+        <div class="ex-cmd">ip link show type gre</div><div class="ex-comment"># GRE interfaces</div>
+        <div class="ex-cmd">ip link show type vxlan</div><div class="ex-comment"># VXLAN interfaces</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ipsec / strongswan</span>
+      <a href="https://docs.strongswan.org/docs/5.9/index.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">IPsec VPN diagnostics (IKEv1/IKEv2)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">ipsec status</div><div class="ex-comment"># IPsec tunnel status</div>
+        <div class="ex-cmd">ipsec statusall</div><div class="ex-comment"># Detailed SA and policy info</div>
+        <div class="ex-cmd">ipsec up conexion</div><div class="ex-comment"># Bring up IPsec tunnel</div>
+        <div class="ex-cmd">ip xfrm state</div><div class="ex-comment"># View kernel Security Associations</div>
+        <div class="ex-cmd">ip xfrm policy</div><div class="ex-comment"># View kernel IPsec policies</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-performance" class="section">
+  <h3>Performance &amp; advanced diagnostics</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iperf3 <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Measure real throughput between two hosts (TCP and UDP)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iperf3 -s</div><div class="ex-comment"># Server mode (on the destination host)</div>
+        <div class="ex-cmd">iperf3 -c 192.168.1.10</div><div class="ex-comment"># TCP test to server</div>
+        <div class="ex-cmd">iperf3 -c host -u -b 100M</div><div class="ex-comment"># UDP test at 100 Mbps</div>
+        <div class="ex-cmd">iperf3 -c host -P 4 -t 30</div><div class="ex-comment"># 4 parallel streams, 30 seconds</div>
+        <div class="ex-cmd">iperf3 -c host -R</div><div class="ex-comment"># Reverse test (server → client)</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">speedtest-cli</span>
+      <a href="https://www.speedtest.net/apps/cli" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Internet speed test from the terminal</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">speedtest-cli</div><div class="ex-comment"># Full test (ping, download, upload)</div>
+        <div class="ex-cmd">speedtest-cli --simple</div><div class="ex-comment"># Numeric results only</div>
+        <div class="ex-cmd">speedtest-cli --list | head -20</div><div class="ex-comment"># Nearest servers</div>
+        <div class="ex-cmd">speedtest-cli --server 1234</div><div class="ex-comment"># Use specific server</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">tc (traffic control) <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">QoS, shaping, and network condition simulation (latency, loss)</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">tc qdisc show dev eth0</div><div class="ex-comment"># View active queue disciplines</div>
+        <div class="ex-cmd">tc -s qdisc show dev eth0</div><div class="ex-comment"># With statistics</div>
+        <div class="ex-cmd">tc qdisc add dev eth0 root netem delay 100ms</div><div class="ex-comment"># Simulate 100ms latency</div>
+        <div class="ex-cmd">tc qdisc add dev eth0 root netem loss 5%</div><div class="ex-comment"># Simulate 5% packet loss</div>
+        <div class="ex-cmd">tc qdisc del dev eth0 root</div><div class="ex-comment"># Delete rules</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nstat / netstat -s</span>
+      <a href="https://man7.org/linux/man-pages/man8/nstat.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Kernel counters: retransmissions, global TCP/IP errors</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nstat -z</div><div class="ex-comment"># All kernel counters</div>
+        <div class="ex-cmd">nstat | grep -i retrans</div><div class="ex-comment"># TCP retransmissions</div>
+        <div class="ex-cmd">nstat -d 5</div><div class="ex-comment"># Delta every 5 seconds</div>
+        <div class="ex-cmd">cat /proc/net/snmp</div><div class="ex-comment"># Raw kernel SNMP counters</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">perf / bpftrace <span class="badge b-adv">advanced</span></span>
+      <span class="cmd-desc">Kernel profiling and network call tracing with eBPF</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">perf stat -e net:* ping -c 1 8.8.8.8</div><div class="ex-comment"># Network events during ping</div>
+        <div class="ex-cmd">bpftrace -e 'kprobe:tcp_retransmit_skb { @[comm] = count(); }'</div><div class="ex-comment"># Retransmissions per process</div>
+        <div class="ex-cmd">bpftrace -e 'tracepoint:net:net_dev_xmit { @bytes = sum(args->len); }'</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="net-wifi" class="section">
+  <h3>Wi-Fi diagnostics</h3>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iwconfig <span class="badge b-dep">deprecated</span></span>
+      <span class="cmd-desc">Wi-Fi interface state: ESSID, frequency, signal strength</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iwconfig</div><div class="ex-comment"># Info on all wireless interfaces</div>
+        <div class="ex-cmd">iwconfig wlan0</div><div class="ex-comment"># Only wlan0</div>
+        <div class="ex-cmd">watch -n 1 iwconfig wlan0</div><div class="ex-comment"># Monitor signal in real time</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">iw <span class="badge b-new">recommended</span></span>
+      <span class="cmd-desc">Modern Wi-Fi management: scan, BSS info, station statistics</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">iw dev</div><div class="ex-comment"># Wi-Fi interfaces and their modes</div>
+        <div class="ex-cmd">iw dev wlan0 scan</div><div class="ex-comment"># Scan available networks</div>
+        <div class="ex-cmd">iw dev wlan0 link</div><div class="ex-comment"># Info on the AP you are connected to</div>
+        <div class="ex-cmd">iw dev wlan0 station dump</div><div class="ex-comment"># Station statistics (signal, BW)</div>
+        <div class="ex-cmd">iw phy</div><div class="ex-comment"># Wi-Fi chipset capabilities</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">nmcli wifi</span>
+      <a href="https://networkmanager.dev/docs/api/latest/nmcli.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Wi-Fi management with NetworkManager: scan, connect, forget networks</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">nmcli dev wifi list</div><div class="ex-comment"># Scan Wi-Fi networks</div>
+        <div class="ex-cmd">nmcli dev wifi connect "MyNetwork" password "mypassword"</div>
+        <div class="ex-cmd">nmcli connection show --active</div>
+        <div class="ex-cmd">nmcli radio wifi off</div><div class="ex-comment"># Disable Wi-Fi</div>
+        <div class="ex-cmd">nmcli connection delete "OldNetwork"</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">wavemon</span>
+      <a href="https://man.archlinux.org/man/wavemon.1" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">Interactive Wi-Fi monitor: signal, noise, real-time histogram</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">wavemon</div><div class="ex-comment"># Interactive monitor (install: apt install wavemon)</div>
+        <div class="ex-cmd">wavemon -i wlan0</div><div class="ex-comment"># Specify interface</div>
+      </div>
+    </div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">rfkill</span>
+      <a href="https://man7.org/linux/man-pages/man8/rfkill.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+      <span class="cmd-desc">View and manage hardware/software blocks for Wi-Fi and Bluetooth</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="cmd-body">
+      <div class="example">
+        <div class="ex-label">Examples</div>
+        <div class="ex-cmd">rfkill list</div><div class="ex-comment"># Status of all devices RF</div>
+        <div class="ex-cmd">rfkill unblock wifi</div><div class="ex-comment"># Unblock Wi-Fi</div>
+        <div class="ex-cmd">rfkill block bluetooth</div><div class="ex-comment"># Block Bluetooth</div>
+        <div class="ex-cmd">rfkill unblock all</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showTab(prefix, name, el) {
+  // Only affect sections and tabs within the same chapter
+  const activeSection = document.getElementById(prefix + '-' + name);
+  if (!activeSection) return;
+  // Find parent chapter
+  const chapter = activeSection.closest('.chapter');
+  chapter.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  chapter.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  activeSection.classList.add('active');
+  el.classList.add('active');
+}
+
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const chev = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+</script>
+
+<!-- ===== SECURITY ===== -->
+<div class="chapter">
+  <div class="chapter-title">🔒 Linux Security &amp; Hardening</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('sec', 'audit', this)">Auditing</div>
+    <div class="tab" onclick="showTab('sec', 'ssh', this)">SSH</div>
+    <div class="tab" onclick="showTab('sec', 'access', this)">Access Control</div>
+    <div class="tab" onclick="showTab('sec', 'integrity', this)">Integrity</div>
+    <div class="tab" onclick="showTab('sec', 'intrusion', this)">Intrusion</div>
+    <div class="tab" onclick="showTab('sec', 'kernel_sec', this)">Kernel</div>
+  </div>
+
+  <div id="sec-audit" class="section active">
+    <h3>System auditing</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">auditd</span>
+      <a href="https://man7.org/linux/man-pages/man8/auditd.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Kernel audit daemon — log file access, syscalls, user actions</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl status auditd</div><div class="ex-comment"># Check if audit daemon is running</div>
+          <div class="ex-cmd">auditctl -l</div><div class="ex-comment"># List active audit rules</div>
+          <div class="ex-cmd">auditctl -w /etc/passwd -p wa -k passwd_changes</div><div class="ex-comment"># Watch passwd for writes/attribs</div>
+          <div class="ex-cmd">auditctl -a always,exit -F arch=b64 -S execve -k exec_log</div><div class="ex-comment"># Log all exec() calls</div>
+          <div class="ex-cmd">auditctl -D</div><div class="ex-comment"># Delete all rules (temporary)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ausearch / aureport</span>
+      <a href="https://man7.org/linux/man-pages/man8/ausearch.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Query and report on audit logs from auditd</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ausearch -k passwd_changes</div><div class="ex-comment"># Search by audit key</div>
+          <div class="ex-cmd">ausearch -m USER_LOGIN -ts today</div><div class="ex-comment"># Today's login events</div>
+          <div class="ex-cmd">ausearch -ui 1000 -ts recent</div><div class="ex-comment"># Events by UID, recent</div>
+          <div class="ex-cmd">aureport --summary</div><div class="ex-comment"># High-level audit summary</div>
+          <div class="ex-cmd">aureport -au</div><div class="ex-comment"># Authentication report</div>
+          <div class="ex-cmd">aureport --failed</div><div class="ex-comment"># Failed events only</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">last / lastb / lastlog</span>
+      <a href="https://man7.org/linux/man-pages/man1/last.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Login history, failed logins, and last login per user</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">last -a | head -20</div><div class="ex-comment"># Recent logins with source IP</div>
+          <div class="ex-cmd">lastb | head -20</div><div class="ex-comment"># Failed login attempts (requires root)</div>
+          <div class="ex-cmd">lastlog</div><div class="ex-comment"># Last login for every user account</div>
+          <div class="ex-cmd">last reboot | head -5</div><div class="ex-comment"># Recent reboots</div>
+          <div class="ex-cmd">who -a</div><div class="ex-comment"># Currently logged-in users</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lynis <span class="badge b-new">recommended</span></span>
+        <span class="cmd-desc">Full system security audit — checks hardening, configs, vulnerabilities</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lynis audit system</div><div class="ex-comment"># Full system audit (install: apt install lynis)</div>
+          <div class="ex-cmd">lynis audit system --quick</div><div class="ex-comment"># Skip pause prompts</div>
+          <div class="ex-cmd">lynis show details TEST-ID</div><div class="ex-comment"># Detail on a specific test</div>
+          <div class="ex-cmd">cat /var/log/lynis-report.dat | grep warning</div><div class="ex-comment"># Extract warnings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-ssh" class="section">
+    <h3>SSH hardening &amp; diagnostics</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sshd config checks</span>
+      <a href="https://man7.org/linux/man-pages/man5/sshd_config.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Verify key SSH server hardening settings</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Key settings to verify in /etc/ssh/sshd_config</div>
+          <div class="ex-cmd">PermitRootLogin no</div><div class="ex-comment"># Disable direct root login</div>
+          <div class="ex-cmd">PasswordAuthentication no</div><div class="ex-comment"># Force key-based auth only</div>
+          <div class="ex-cmd">MaxAuthTries 3</div><div class="ex-comment"># Limit brute-force attempts</div>
+          <div class="ex-cmd">AllowUsers deploy alice</div><div class="ex-comment"># Whitelist allowed users</div>
+          <div class="ex-cmd">Port 2222</div><div class="ex-comment"># Change default port (minor obscurity)</div>
+          <div class="ex-cmd">Protocol 2</div><div class="ex-comment"># SSHv2 only</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Apply and verify</div>
+          <div class="ex-cmd">sshd -t</div><div class="ex-comment"># Test config syntax before reloading</div>
+          <div class="ex-cmd">systemctl reload sshd</div><div class="ex-comment"># Apply changes without dropping sessions</div>
+          <div class="ex-cmd">ss -tlnp | grep sshd</div><div class="ex-comment"># Confirm which port sshd is listening on</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ssh-keygen / ssh-copy-id</span>
+      <a href="https://man7.org/linux/man-pages/man1/ssh-keygen.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage SSH key pairs and authorized keys</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ssh-keygen -t ed25519 -C "user@host"</div><div class="ex-comment"># Generate modern Ed25519 key pair</div>
+          <div class="ex-cmd">ssh-keygen -t rsa -b 4096</div><div class="ex-comment"># RSA 4096-bit key</div>
+          <div class="ex-cmd">ssh-copy-id user@server</div><div class="ex-comment"># Copy public key to remote authorized_keys</div>
+          <div class="ex-cmd">ssh-keygen -lf ~/.ssh/authorized_keys</div><div class="ex-comment"># List fingerprints of authorized keys</div>
+          <div class="ex-cmd">cat /etc/ssh/sshd_config | grep AuthorizedKeysFile</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">fail2ban</span>
+      <a href="https://www.fail2ban.org/wiki/index.php/MANUAL_0_8" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Auto-ban IPs after repeated failed login attempts</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl status fail2ban</div>
+          <div class="ex-cmd">fail2ban-client status</div><div class="ex-comment"># List active jails</div>
+          <div class="ex-cmd">fail2ban-client status sshd</div><div class="ex-comment"># SSH jail details + banned IPs</div>
+          <div class="ex-cmd">fail2ban-client set sshd unbanip 1.2.3.4</div><div class="ex-comment"># Unban an IP</div>
+          <div class="ex-cmd">fail2ban-client set sshd banip 1.2.3.4</div><div class="ex-comment"># Manually ban an IP</div>
+          <div class="ex-cmd">tail -f /var/log/fail2ban.log</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ssh -v (debug)</span>
+      <a href="https://man7.org/linux/man-pages/man1/ssh.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Debug SSH connection issues step by step</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ssh -v user@host</div><div class="ex-comment"># Verbose: shows each auth step</div>
+          <div class="ex-cmd">ssh -vvv user@host</div><div class="ex-comment"># Maximum verbosity</div>
+          <div class="ex-cmd">journalctl -u sshd -f</div><div class="ex-comment"># Server-side SSH logs in real time</div>
+          <div class="ex-cmd">grep "Failed password" /var/log/auth.log | awk '{print $11}' | sort | uniq -c | sort -rn</div><div class="ex-comment"># Top attacking IPs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-access" class="section">
+    <h3>Access control — users, sudo, SELinux/AppArmor</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">users &amp; groups</span>
+      <a href="https://man7.org/linux/man-pages/man5/passwd.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Inspect user accounts, groups, and privilege escalation paths</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">cat /etc/passwd | awk -F: '$3==0'</div><div class="ex-comment"># Find all UID 0 (root) accounts</div>
+          <div class="ex-cmd">awk -F: '($2 == "" )' /etc/shadow</div><div class="ex-comment"># Accounts with empty passwords</div>
+          <div class="ex-cmd">getent group sudo</div><div class="ex-comment"># Who is in the sudo group</div>
+          <div class="ex-cmd">groups username</div><div class="ex-comment"># Groups a user belongs to</div>
+          <div class="ex-cmd">id username</div><div class="ex-comment"># UID, GID, all group memberships</div>
+          <div class="ex-cmd">chage -l username</div><div class="ex-comment"># Password expiry info</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sudo</span>
+      <a href="https://man7.org/linux/man-pages/man8/sudo.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Audit sudo configuration and usage</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">sudo -l</div><div class="ex-comment"># What sudo commands can current user run</div>
+          <div class="ex-cmd">sudo -l -U username</div><div class="ex-comment"># sudo rights for another user</div>
+          <div class="ex-cmd">visudo -c</div><div class="ex-comment"># Syntax check sudoers file</div>
+          <div class="ex-cmd">grep -r NOPASSWD /etc/sudoers /etc/sudoers.d/</div><div class="ex-comment"># Find passwordless sudo grants</div>
+          <div class="ex-cmd">journalctl -u sudo | grep -i "incorrect\|NOT in sudoers"</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">SELinux</span>
+      <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/using_selinux/index" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">SELinux status, troubleshooting denials (RHEL/CentOS/Fedora)</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">getenforce</div><div class="ex-comment"># Enforcing / Permissive / Disabled</div>
+          <div class="ex-cmd">sestatus</div><div class="ex-comment"># Full SELinux status and policy</div>
+          <div class="ex-cmd">setenforce 0</div><div class="ex-comment"># Temporarily set Permissive (for testing)</div>
+          <div class="ex-cmd">audit2why < /var/log/audit/audit.log</div><div class="ex-comment"># Explain denials in plain English</div>
+          <div class="ex-cmd">audit2allow -a -M mypol && semodule -i mypol.pp</div><div class="ex-comment"># Create and load policy from denials</div>
+          <div class="ex-cmd">ls -Z /var/www/html</div><div class="ex-comment"># Show SELinux context of files</div>
+          <div class="ex-cmd">restorecon -Rv /var/www/html</div><div class="ex-comment"># Restore default file contexts</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">AppArmor</span>
+      <a href="https://apparmor.net/documentation/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">AppArmor status and profile management (Ubuntu/Debian)</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">aa-status</div><div class="ex-comment"># Profiles loaded and their mode</div>
+          <div class="ex-cmd">aa-enforce /etc/apparmor.d/usr.sbin.nginx</div><div class="ex-comment"># Set profile to enforce mode</div>
+          <div class="ex-cmd">aa-complain /etc/apparmor.d/usr.sbin.nginx</div><div class="ex-comment"># Log only, don't enforce</div>
+          <div class="ex-cmd">dmesg | grep apparmor</div><div class="ex-comment"># AppArmor denials in kernel log</div>
+          <div class="ex-cmd">journalctl -f | grep apparmor</div><div class="ex-comment"># Real-time AppArmor events</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-integrity" class="section">
+    <h3>File integrity and permissions</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">find (permission audit)</span>
+      <a href="https://man7.org/linux/man-pages/man1/find.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Find dangerous file permissions: SUID, world-writable, no-owner</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">find / -perm -4000 -type f 2>/dev/null</div><div class="ex-comment"># SUID binaries (can run as root)</div>
+          <div class="ex-cmd">find / -perm -2000 -type f 2>/dev/null</div><div class="ex-comment"># SGID binaries</div>
+          <div class="ex-cmd">find / -perm -0002 -type f 2>/dev/null</div><div class="ex-comment"># World-writable files</div>
+          <div class="ex-cmd">find / -nouser -o -nogroup 2>/dev/null</div><div class="ex-comment"># Files with no valid owner</div>
+          <div class="ex-cmd">find /tmp /var/tmp -type f -ls</div><div class="ex-comment"># Suspicious files in temp dirs</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">AIDE / tripwire <span class="badge b-new">recommended</span></span>
+        <span class="cmd-desc">File integrity monitoring — detect unauthorized changes to system files</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">AIDE examples</div>
+          <div class="ex-cmd">aide --init</div><div class="ex-comment"># Initialize baseline database</div>
+          <div class="ex-cmd">aide --check</div><div class="ex-comment"># Compare current state to baseline</div>
+          <div class="ex-cmd">aide --update</div><div class="ex-comment"># Update baseline after approved changes</div>
+          <div class="ex-cmd">cat /etc/aide/aide.conf</div><div class="ex-comment"># Configure what to monitor</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">chkrootkit / rkhunter</span>
+      <a href="https://rkhunter.sourceforge.net/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Scan for rootkits, backdoors, and suspicious binaries</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">chkrootkit</div><div class="ex-comment"># Quick rootkit scan</div>
+          <div class="ex-cmd">rkhunter --check</div><div class="ex-comment"># Rootkit Hunter full scan</div>
+          <div class="ex-cmd">rkhunter --update</div><div class="ex-comment"># Update rkhunter database</div>
+          <div class="ex-cmd">rkhunter --check --skip-keypress --report-warnings-only</div><div class="ex-comment"># Non-interactive, warnings only</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">debsums / rpm -V</span>
+      <a href="https://man7.org/linux/man-pages/man8/rpm.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Verify installed package files against their checksums</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">debsums -c</div><div class="ex-comment"># Check all packages, show changed files (Debian)</div>
+          <div class="ex-cmd">debsums nginx</div><div class="ex-comment"># Check specific package</div>
+          <div class="ex-cmd">rpm -Va</div><div class="ex-comment"># Verify all RPM packages (RHEL/CentOS)</div>
+          <div class="ex-cmd">rpm -Vf /usr/sbin/sshd</div><div class="ex-comment"># Verify file against its package</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-intrusion" class="section">
+    <h3>Intrusion detection and network exposure</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ss / netstat (security)</span>
+      <a href="https://man7.org/linux/man-pages/man8/ss.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Audit open ports and unexpected listening services</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ss -tulnp</div><div class="ex-comment"># All listening ports with process names</div>
+          <div class="ex-cmd">ss -tulnp | grep -v '127.0.0.1\|::1'</div><div class="ex-comment"># Publicly exposed ports only</div>
+          <div class="ex-cmd">ss -tnp state established</div><div class="ex-comment"># Active outbound connections</div>
+          <div class="ex-cmd">ss -tnp | grep ESTAB | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn</div><div class="ex-comment"># Top connected IPs</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ps / lsof (suspicious processes)</span>
+      <a href="https://man7.org/linux/man-pages/man1/ps.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Spot unusual or hidden processes and open file descriptors</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ps auxf</div><div class="ex-comment"># Full process tree — spot unexpected parents</div>
+          <div class="ex-cmd">ls -la /proc/*/exe 2>/dev/null | grep deleted</div><div class="ex-comment"># Processes running deleted binaries (malware sign)</div>
+          <div class="ex-cmd">lsof -i -n -P | grep LISTEN</div><div class="ex-comment"># All listening sockets with process</div>
+          <div class="ex-cmd">ls /proc/ | grep -E '^[0-9]+$' | xargs -I{} readlink /proc/{}/exe 2>/dev/null | sort -u</div><div class="ex-comment"># All unique binaries currently running</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">crontab audit</span>
+      <a href="https://man7.org/linux/man-pages/man5/crontab.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Find scheduled tasks that could be persistence mechanisms</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">crontab -l</div><div class="ex-comment"># Current user's crontab</div>
+          <div class="ex-cmd">for u in $(cut -f1 -d: /etc/passwd); do crontab -u $u -l 2>/dev/null; done</div><div class="ex-comment"># All users' crontabs</div>
+          <div class="ex-cmd">ls -la /etc/cron.*</div><div class="ex-comment"># System cron directories</div>
+          <div class="ex-cmd">cat /etc/crontab</div><div class="ex-comment"># System-wide crontab</div>
+          <div class="ex-cmd">systemctl list-timers --all</div><div class="ex-comment"># Systemd timers (modern cron alternative)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">opensnoop / execsnoop <span class="badge b-adv">advanced</span></span>
+        <span class="cmd-desc">eBPF-based real-time tracing of file opens and process execution</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">opensnoop-bpfcc</div><div class="ex-comment"># Watch every file open in real time</div>
+          <div class="ex-cmd">execsnoop-bpfcc</div><div class="ex-comment"># Watch every process execution in real time</div>
+          <div class="ex-cmd">opensnoop-bpfcc -p 1234</div><div class="ex-comment"># Filter by PID</div>
+          <div class="ex-cmd">bpftrace -e 'tracepoint:syscalls:sys_enter_execve { printf("%s %s\n", comm, str(args->filename)); }'</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-kernel_sec" class="section">
+    <h3>Kernel security hardening</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">sysctl (security params)</span>
+      <a href="https://man7.org/linux/man-pages/man8/sysctl.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Key kernel parameters that harden the system against attacks</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Network hardening</div>
+          <div class="ex-cmd">sysctl net.ipv4.conf.all.rp_filter</div><div class="ex-comment"># Reverse path filtering (anti-spoofing)</div>
+          <div class="ex-cmd">sysctl net.ipv4.conf.all.accept_redirects</div><div class="ex-comment"># Should be 0 (reject ICMP redirects)</div>
+          <div class="ex-cmd">sysctl net.ipv4.conf.all.send_redirects</div><div class="ex-comment"># Should be 0 on non-routers</div>
+          <div class="ex-cmd">sysctl net.ipv4.tcp_syncookies</div><div class="ex-comment"># SYN flood protection (should be 1)</div>
+          <div class="ex-cmd">sysctl net.ipv4.conf.all.log_martians</div><div class="ex-comment"># Log bogus source addresses</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Kernel hardening</div>
+          <div class="ex-cmd">sysctl kernel.randomize_va_space</div><div class="ex-comment"># ASLR (should be 2)</div>
+          <div class="ex-cmd">sysctl kernel.dmesg_restrict</div><div class="ex-comment"># Restrict dmesg to root (should be 1)</div>
+          <div class="ex-cmd">sysctl kernel.kptr_restrict</div><div class="ex-comment"># Hide kernel pointers (should be 1 or 2)</div>
+          <div class="ex-cmd">sysctl fs.suid_dumpable</div><div class="ex-comment"># Core dumps for SUID (should be 0)</div>
+          <div class="ex-cmd">sysctl kernel.yama.ptrace_scope</div><div class="ex-comment"># Restrict ptrace (1=restricted)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">dmesg (security events)</span>
+      <a href="https://man7.org/linux/man-pages/man1/dmesg.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Kernel messages related to security: segfaults, OOM, buffer overflows</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">dmesg | grep -i "segfault\|protection\|exploit"</div>
+          <div class="ex-cmd">dmesg | grep -i "oom\|killed"</div><div class="ex-comment"># OOM kills</div>
+          <div class="ex-cmd">dmesg | grep -i "apparmor\|selinux"</div><div class="ex-comment"># MAC framework events</div>
+          <div class="ex-cmd">dmesg -T | grep -i "audit"</div><div class="ex-comment"># Audit events with timestamp</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">openssl &amp; certificate checks</span>
+      <a href="https://www.openssl.org/docs/man3.0/man1/openssl.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Verify TLS certs, ciphers, and expiry dates</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">openssl s_client -connect host:443 2>/dev/null | openssl x509 -noout -dates</div><div class="ex-comment"># Cert expiry</div>
+          <div class="ex-cmd">openssl s_client -connect host:443 2>/dev/null | openssl x509 -noout -subject -issuer</div>
+          <div class="ex-cmd">openssl ciphers -v 'HIGH:!aNULL:!MD5'</div><div class="ex-comment"># List strong ciphers</div>
+          <div class="ex-cmd">nmap --script ssl-enum-ciphers -p 443 host</div><div class="ex-comment"># Audit supported ciphers remotely</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STORAGE ===== -->
+<div class="chapter">
+  <div class="chapter-title">📦 Storage &amp; Filesystems</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('stor', 'disk_usage', this)">Disk Usage</div>
+    <div class="tab" onclick="showTab('stor', 'block', this)">Block Devices</div>
+    <div class="tab" onclick="showTab('stor', 'fs', this)">Filesystems</div>
+    <div class="tab" onclick="showTab('stor', 'lvm', this)">LVM</div>
+    <div class="tab" onclick="showTab('stor', 'raid', this)">RAID</div>
+    <div class="tab" onclick="showTab('stor', 'smart', this)">S.M.A.R.T.</div>
+  </div>
+
+  <div id="stor-disk_usage" class="section active">
+    <h3>Disk usage</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">df</span>
+      <a href="https://man7.org/linux/man-pages/man1/df.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Filesystem disk space usage — mounted filesystems at a glance</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">df -h</div><div class="ex-comment"># Human-readable (GB/MB)</div>
+          <div class="ex-cmd">df -hT</div><div class="ex-comment"># Include filesystem type</div>
+          <div class="ex-cmd">df -hi</div><div class="ex-comment"># Inode usage (important — can fill up independently of space)</div>
+          <div class="ex-cmd">df -h /var</div><div class="ex-comment"># Only the filesystem containing /var</div>
+          <div class="ex-cmd">watch -n 5 df -h</div><div class="ex-comment"># Monitor disk usage every 5 seconds</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">du</span>
+      <a href="https://man7.org/linux/man-pages/man1/du.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Directory disk usage — find what is consuming space</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">du -sh /var/*</div><div class="ex-comment"># Size of each item in /var</div>
+          <div class="ex-cmd">du -ah /var/log | sort -rh | head -20</div><div class="ex-comment"># Top 20 largest files in /var/log</div>
+          <div class="ex-cmd">du -sh /* 2>/dev/null | sort -rh | head -10</div><div class="ex-comment"># Top 10 largest root directories</div>
+          <div class="ex-cmd">du -h --max-depth=2 /var</div><div class="ex-comment"># Limit traversal depth</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">ncdu <span class="badge b-new">recommended</span></span>
+        <span class="cmd-desc">Interactive ncurses disk usage browser — navigate and find space hogs</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ncdu /</div><div class="ex-comment"># Interactive browser from root (install: apt install ncdu)</div>
+          <div class="ex-cmd">ncdu -x /</div><div class="ex-comment"># Stay on one filesystem (skip mounts)</div>
+          <div class="ex-cmd">ncdu -o report.json /var</div><div class="ex-comment"># Export result to JSON</div>
+          <div class="ex-cmd">ncdu -f report.json</div><div class="ex-comment"># Browse saved report offline</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">findmnt</span>
+      <a href="https://man7.org/linux/man-pages/man8/findmnt.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Show all mount points with options, source, and filesystem type</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">findmnt</div><div class="ex-comment"># Tree view of all mounts</div>
+          <div class="ex-cmd">findmnt -t ext4,xfs</div><div class="ex-comment"># Filter by filesystem type</div>
+          <div class="ex-cmd">findmnt /dev/sda1</div><div class="ex-comment"># Where is this device mounted</div>
+          <div class="ex-cmd">findmnt --verify</div><div class="ex-comment"># Verify all mounts in fstab are OK</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stor-block" class="section">
+    <h3>Block devices and partitions</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lsblk</span>
+      <a href="https://man7.org/linux/man-pages/man8/lsblk.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Tree view of all block devices: disks, partitions, LVM, RAID</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lsblk</div><div class="ex-comment"># Block device tree</div>
+          <div class="ex-cmd">lsblk -f</div><div class="ex-comment"># Include filesystem type and UUID</div>
+          <div class="ex-cmd">lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,UUID</div><div class="ex-comment"># Custom columns</div>
+          <div class="ex-cmd">lsblk -d -o NAME,SIZE,ROTA</div><div class="ex-comment"># ROTA=1 means spinning disk, 0 = SSD</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">fdisk / parted / gdisk</span>
+      <a href="https://man7.org/linux/man-pages/man8/fdisk.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Partition table management — list, create, and modify partitions</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">fdisk -l</div><div class="ex-comment"># List all disks and partitions</div>
+          <div class="ex-cmd">fdisk -l /dev/sda</div><div class="ex-comment"># Specific disk</div>
+          <div class="ex-cmd">parted /dev/sda print</div><div class="ex-comment"># Print partition table (GPT aware)</div>
+          <div class="ex-cmd">parted -l</div><div class="ex-comment"># All disks</div>
+          <div class="ex-cmd">gdisk -l /dev/sda</div><div class="ex-comment"># GPT partition table details</div>
+          <div class="ex-cmd">blkid</div><div class="ex-comment"># UUIDs and filesystem types of all block devices</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">mount / umount</span>
+      <a href="https://man7.org/linux/man-pages/man8/mount.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Mount and unmount filesystems, inspect current mounts</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">mount | column -t</div><div class="ex-comment"># All current mounts, formatted</div>
+          <div class="ex-cmd">mount /dev/sdb1 /mnt/data</div><div class="ex-comment"># Mount partition</div>
+          <div class="ex-cmd">mount -o remount,ro /</div><div class="ex-comment"># Remount root read-only</div>
+          <div class="ex-cmd">mount -t tmpfs -o size=512m tmpfs /mnt/ramdisk</div><div class="ex-comment"># RAM disk</div>
+          <div class="ex-cmd">umount -l /mnt/data</div><div class="ex-comment"># Lazy unmount (when busy)</div>
+          <div class="ex-cmd">fuser -mv /mnt/data</div><div class="ex-comment"># What is using this mount point</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stor-fs" class="section">
+    <h3>Filesystem checks and repair</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">fsck / e2fsck</span>
+      <a href="https://man7.org/linux/man-pages/man8/fsck.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Check and repair filesystem errors (must be unmounted first)</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">fsck /dev/sdb1</div><div class="ex-comment"># Check filesystem (unmount first!)</div>
+          <div class="ex-cmd">fsck -n /dev/sdb1</div><div class="ex-comment"># Dry run — no changes</div>
+          <div class="ex-cmd">e2fsck -f /dev/sdb1</div><div class="ex-comment"># Force check ext2/3/4</div>
+          <div class="ex-cmd">e2fsck -p /dev/sdb1</div><div class="ex-comment"># Auto-fix non-destructive errors</div>
+          <div class="ex-cmd">tune2fs -l /dev/sda1 | grep 'Mount count\|Last checked'</div><div class="ex-comment"># Check interval info</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">xfs_repair / xfs_info</span>
+      <a href="https://man7.org/linux/man-pages/man8/xfs_repair.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">XFS filesystem check, repair, and metadata info</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">xfs_info /dev/sda1</div><div class="ex-comment"># Filesystem info (block size, inode count)</div>
+          <div class="ex-cmd">xfs_repair -n /dev/sda1</div><div class="ex-comment"># Dry run check</div>
+          <div class="ex-cmd">xfs_repair /dev/sda1</div><div class="ex-comment"># Repair (unmount first)</div>
+          <div class="ex-cmd">xfs_admin -l /dev/sda1</div><div class="ex-comment"># Show filesystem label</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">tune2fs / resize2fs</span>
+      <a href="https://man7.org/linux/man-pages/man8/tune2fs.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Tune ext filesystem parameters and resize online</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">tune2fs -l /dev/sda1</div><div class="ex-comment"># Print all ext filesystem parameters</div>
+          <div class="ex-cmd">tune2fs -m 1 /dev/sda1</div><div class="ex-comment"># Set reserved blocks to 1% (default 5%)</div>
+          <div class="ex-cmd">resize2fs /dev/sda1</div><div class="ex-comment"># Grow to fill partition (after partition resize)</div>
+          <div class="ex-cmd">resize2fs /dev/sda1 20G</div><div class="ex-comment"># Shrink to 20G (offline only)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stor-lvm" class="section">
+    <h3>LVM — Logical Volume Manager</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">pvs / vgs / lvs</span>
+      <a href="https://man7.org/linux/man-pages/man8/lvm.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Quick summary of physical volumes, volume groups, and logical volumes</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">pvs</div><div class="ex-comment"># Physical volumes summary</div>
+          <div class="ex-cmd">vgs</div><div class="ex-comment"># Volume groups summary</div>
+          <div class="ex-cmd">lvs</div><div class="ex-comment"># Logical volumes summary</div>
+          <div class="ex-cmd">pvdisplay</div><div class="ex-comment"># Detailed PV info</div>
+          <div class="ex-cmd">vgdisplay</div><div class="ex-comment"># Detailed VG info</div>
+          <div class="ex-cmd">lvdisplay</div><div class="ex-comment"># Detailed LV info</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lvextend / lvreduce</span>
+      <a href="https://man7.org/linux/man-pages/man8/lvextend.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Resize logical volumes — extend online, shrink offline</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lvextend -L +10G /dev/vg0/data</div><div class="ex-comment"># Add 10G to LV</div>
+          <div class="ex-cmd">lvextend -l +100%FREE /dev/vg0/data</div><div class="ex-comment"># Use all free VG space</div>
+          <div class="ex-cmd">lvextend -r -L +10G /dev/vg0/data</div><div class="ex-comment"># Extend LV and resize filesystem in one step</div>
+          <div class="ex-cmd">vgextend vg0 /dev/sdb</div><div class="ex-comment"># Add new disk to volume group</div>
+          <div class="ex-cmd">pvcreate /dev/sdb</div><div class="ex-comment"># Initialize disk as PV first</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">lvm snapshots</span>
+      <a href="https://man7.org/linux/man-pages/man8/lvcreate.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Create and restore LVM snapshots for backups or safe changes</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lvcreate -L 5G -s -n snap0 /dev/vg0/data</div><div class="ex-comment"># Create 5G snapshot</div>
+          <div class="ex-cmd">lvs -o +lv_attr</div><div class="ex-comment"># See snapshot status</div>
+          <div class="ex-cmd">mount /dev/vg0/snap0 /mnt/snap -o ro</div><div class="ex-comment"># Mount snapshot read-only</div>
+          <div class="ex-cmd">lvconvert --merge /dev/vg0/snap0</div><div class="ex-comment"># Rollback: merge snapshot back</div>
+          <div class="ex-cmd">lvremove /dev/vg0/snap0</div><div class="ex-comment"># Delete snapshot</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stor-raid" class="section">
+    <h3>RAID — mdadm software RAID</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">mdadm --detail</span>
+      <a href="https://man7.org/linux/man-pages/man8/mdadm.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Check RAID array status, health, and sync progress</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">mdadm --detail /dev/md0</div><div class="ex-comment"># Full RAID array info</div>
+          <div class="ex-cmd">cat /proc/mdstat</div><div class="ex-comment"># All arrays status and sync progress</div>
+          <div class="ex-cmd">mdadm --detail --scan</div><div class="ex-comment"># All arrays, scannable format</div>
+          <div class="ex-cmd">watch -n 1 cat /proc/mdstat</div><div class="ex-comment"># Monitor rebuild in real time</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">mdadm (manage)</span>
+      <a href="https://man7.org/linux/man-pages/man8/mdadm.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Add, remove, and replace drives in a RAID array</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">mdadm --manage /dev/md0 --fail /dev/sdb1</div><div class="ex-comment"># Mark disk as failed</div>
+          <div class="ex-cmd">mdadm --manage /dev/md0 --remove /dev/sdb1</div><div class="ex-comment"># Remove failed disk</div>
+          <div class="ex-cmd">mdadm --manage /dev/md0 --add /dev/sdc1</div><div class="ex-comment"># Add replacement disk (triggers rebuild)</div>
+          <div class="ex-cmd">mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda1 /dev/sdb1</div><div class="ex-comment"># Create RAID1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="stor-smart" class="section">
+    <h3>S.M.A.R.T. disk health</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">smartctl <span class="badge b-new">recommended</span></span>
+        <span class="cmd-desc">Query S.M.A.R.T. data and run disk health tests</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">smartctl -i /dev/sda</div><div class="ex-comment"># Disk identity info</div>
+          <div class="ex-cmd">smartctl -H /dev/sda</div><div class="ex-comment"># Overall health assessment (PASSED / FAILED)</div>
+          <div class="ex-cmd">smartctl -a /dev/sda</div><div class="ex-comment"># Full SMART report</div>
+          <div class="ex-cmd">smartctl -t short /dev/sda</div><div class="ex-comment"># Run short self-test (~2 min)</div>
+          <div class="ex-cmd">smartctl -t long /dev/sda</div><div class="ex-comment"># Run extended test (~hours)</div>
+          <div class="ex-cmd">smartctl -l selftest /dev/sda</div><div class="ex-comment"># View self-test results log</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Key SMART attributes to watch</div>
+          <div class="ex-cmd">Reallocated_Sector_Ct</div><div class="ex-comment"># Sectors moved due to errors — any value &gt; 0 is a warning</div>
+          <div class="ex-cmd">Pending_Sector_Count</div><div class="ex-comment"># Sectors waiting to be reallocated</div>
+          <div class="ex-cmd">Uncorrectable_Sector_Count</div><div class="ex-comment"># Unrecoverable read errors — replace disk if &gt; 0</div>
+          <div class="ex-cmd">Power_On_Hours</div><div class="ex-comment"># Total disk runtime</div>
+          <div class="ex-cmd">Temperature_Celsius</div><div class="ex-comment"># Disk temperature — &gt;55°C is concerning</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">smartd</span>
+      <a href="https://www.smartmontools.org/browser/trunk/smartmontools/smartd.8.in" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Background daemon that monitors SMART and emails on failures</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl status smartd</div>
+          <div class="ex-cmd">cat /etc/smartd.conf</div><div class="ex-comment"># Configure which disks and what to alert on</div>
+          <div class="ex-cmd">smartd -q onecheck</div><div class="ex-comment"># Run one check and exit</div>
+          <div class="ex-cmd">journalctl -u smartd</div><div class="ex-comment"># SMART daemon logs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SYSTEMD ===== -->
+<div class="chapter">
+  <div class="chapter-title">🔄 Services &amp; Systemd</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('sys', 'services', this)">Services</div>
+    <div class="tab" onclick="showTab('sys', 'journal', this)">Journal</div>
+    <div class="tab" onclick="showTab('sys', 'boot', this)">Boot Analysis</div>
+    <div class="tab" onclick="showTab('sys', 'timers', this)">Timers</div>
+    <div class="tab" onclick="showTab('sys', 'units', this)">Units &amp; Deps</div>
+    <div class="tab" onclick="showTab('sys', 'targets', this)">Targets &amp; cgroups</div>
+  </div>
+
+  <div id="sys-services" class="section active">
+    <h3>Service management</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl (basics)</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Start, stop, enable, and inspect services</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl status nginx</div><div class="ex-comment"># Status, recent logs, PID, memory</div>
+          <div class="ex-cmd">systemctl start nginx</div>
+          <div class="ex-cmd">systemctl stop nginx</div>
+          <div class="ex-cmd">systemctl restart nginx</div>
+          <div class="ex-cmd">systemctl reload nginx</div><div class="ex-comment"># Reload config without restart (if supported)</div>
+          <div class="ex-cmd">systemctl enable nginx</div><div class="ex-comment"># Start on boot</div>
+          <div class="ex-cmd">systemctl disable nginx</div>
+          <div class="ex-cmd">systemctl enable --now nginx</div><div class="ex-comment"># Enable and start immediately</div>
+          <div class="ex-cmd">systemctl mask nginx</div><div class="ex-comment"># Prevent service from ever being started</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl (listing)</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">List and filter services by state, type, or failure</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl list-units --type=service</div><div class="ex-comment"># All loaded services</div>
+          <div class="ex-cmd">systemctl list-units --type=service --state=failed</div><div class="ex-comment"># Failed services</div>
+          <div class="ex-cmd">systemctl list-units --type=service --state=running</div>
+          <div class="ex-cmd">systemctl --failed</div><div class="ex-comment"># Shorthand for failed units</div>
+          <div class="ex-cmd">systemctl list-unit-files --type=service</div><div class="ex-comment"># All installed service files + enabled state</div>
+          <div class="ex-cmd">systemctl is-active nginx</div><div class="ex-comment"># Scriptable: returns active/inactive</div>
+          <div class="ex-cmd">systemctl is-enabled nginx</div><div class="ex-comment"># Scriptable: returns enabled/disabled</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl edit</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Override unit file settings without modifying originals</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl edit nginx</div><div class="ex-comment"># Create drop-in override (survives package updates)</div>
+          <div class="ex-cmd">systemctl edit --full nginx</div><div class="ex-comment"># Edit full unit file copy</div>
+          <div class="ex-cmd">systemctl cat nginx</div><div class="ex-comment"># Show effective unit file with all overrides</div>
+          <div class="ex-cmd">systemctl daemon-reload</div><div class="ex-comment"># Required after editing unit files</div>
+          <div class="ex-cmd">ls /etc/systemd/system/nginx.service.d/</div><div class="ex-comment"># Drop-in directory</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sys-journal" class="section">
+    <h3>journalctl — log querying</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">journalctl (filtering)</span>
+      <a href="https://man7.org/linux/man-pages/man1/journalctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Query logs by unit, time, priority, and more</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">journalctl -u nginx -f</div><div class="ex-comment"># Follow nginx logs</div>
+          <div class="ex-cmd">journalctl -u nginx --since "1 hour ago"</div>
+          <div class="ex-cmd">journalctl -u nginx --since "2024-01-01" --until "2024-01-02"</div>
+          <div class="ex-cmd">journalctl -p err</div><div class="ex-comment"># Only errors and above</div>
+          <div class="ex-cmd">journalctl -p warning -u sshd</div><div class="ex-comment"># Warnings from sshd</div>
+          <div class="ex-cmd">journalctl _PID=1234</div><div class="ex-comment"># Logs from specific PID</div>
+          <div class="ex-cmd">journalctl _UID=1000</div><div class="ex-comment"># Logs from specific UID</div>
+          <div class="ex-cmd">journalctl -k</div><div class="ex-comment"># Kernel messages only (like dmesg)</div>
+          <div class="ex-cmd">journalctl -b</div><div class="ex-comment"># Current boot only</div>
+          <div class="ex-cmd">journalctl -b -1</div><div class="ex-comment"># Previous boot</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">journalctl (output &amp; maintenance)</span>
+      <a href="https://man7.org/linux/man-pages/man1/journalctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Format output, manage journal disk usage</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">journalctl -u nginx -o json-pretty</div><div class="ex-comment"># JSON output for parsing</div>
+          <div class="ex-cmd">journalctl -u nginx -n 50 --no-pager</div><div class="ex-comment"># Last 50 lines, no pager</div>
+          <div class="ex-cmd">journalctl --disk-usage</div><div class="ex-comment"># How much space journals are using</div>
+          <div class="ex-cmd">journalctl --vacuum-size=500M</div><div class="ex-comment"># Trim journals to 500MB</div>
+          <div class="ex-cmd">journalctl --vacuum-time=30d</div><div class="ex-comment"># Delete journals older than 30 days</div>
+          <div class="ex-cmd">journalctl --list-boots</div><div class="ex-comment"># All recorded boots with timestamps</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sys-boot" class="section">
+    <h3>Boot time analysis</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemd-analyze <span class="badge b-new">recommended</span></span>
+        <span class="cmd-desc">Profile boot time — find slow services and bottlenecks</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemd-analyze</div><div class="ex-comment"># Total boot time: firmware + loader + kernel + userspace</div>
+          <div class="ex-cmd">systemd-analyze blame</div><div class="ex-comment"># Services sorted by startup time</div>
+          <div class="ex-cmd">systemd-analyze critical-chain</div><div class="ex-comment"># Critical path of boot sequence</div>
+          <div class="ex-cmd">systemd-analyze critical-chain nginx.service</div><div class="ex-comment"># Critical path for specific service</div>
+          <div class="ex-cmd">systemd-analyze plot > boot.svg</div><div class="ex-comment"># Generate SVG timeline chart</div>
+          <div class="ex-cmd">systemd-analyze dot | dot -Tsvg > deps.svg</div><div class="ex-comment"># Dependency graph (requires graphviz)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">bootctl / efibootmgr</span>
+      <a href="https://man7.org/linux/man-pages/man1/bootctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Inspect and manage the bootloader and EFI boot entries</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">bootctl status</div><div class="ex-comment"># Current bootloader and boot entry info</div>
+          <div class="ex-cmd">bootctl list</div><div class="ex-comment"># All boot entries</div>
+          <div class="ex-cmd">efibootmgr -v</div><div class="ex-comment"># EFI boot entries with details</div>
+          <div class="ex-cmd">efibootmgr -o 0001,0002</div><div class="ex-comment"># Set boot order</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sys-timers" class="section">
+    <h3>Systemd timers (modern cron)</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl list-timers</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">List all active timers with next/last trigger times</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl list-timers</div><div class="ex-comment"># Active timers with next run time</div>
+          <div class="ex-cmd">systemctl list-timers --all</div><div class="ex-comment"># Include inactive timers</div>
+          <div class="ex-cmd">systemctl status logrotate.timer</div>
+          <div class="ex-cmd">systemctl start backup.timer</div><div class="ex-comment"># Start a timer immediately</div>
+          <div class="ex-cmd">journalctl -u backup.service</div><div class="ex-comment"># Logs from the timer's service</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">Timer unit example</span>
+      <a href="https://man7.org/linux/man-pages/man5/systemd.timer.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Creating a timer + service pair to replace a cron job</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">/etc/systemd/system/backup.service</div>
+          <div class="ex-cmd">[Unit]</div>
+          <div class="ex-cmd">Description=Daily backup</div>
+          <div class="ex-cmd">[Service]</div>
+          <div class="ex-cmd">Type=oneshot</div>
+          <div class="ex-cmd">ExecStart=/usr/local/bin/backup.sh</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">/etc/systemd/system/backup.timer</div>
+          <div class="ex-cmd">[Unit]</div>
+          <div class="ex-cmd">Description=Run backup daily</div>
+          <div class="ex-cmd">[Timer]</div>
+          <div class="ex-cmd">OnCalendar=daily</div>
+          <div class="ex-cmd">Persistent=true</div><div class="ex-comment"># Run if missed while off</div>
+          <div class="ex-cmd">[Install]</div>
+          <div class="ex-cmd">WantedBy=timers.target</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sys-units" class="section">
+    <h3>Units, dependencies, and sockets</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl (dependencies)</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemctl.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Inspect service dependency trees and ordering</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl list-dependencies nginx</div><div class="ex-comment"># What nginx depends on</div>
+          <div class="ex-cmd">systemctl list-dependencies --reverse nginx</div><div class="ex-comment"># What depends on nginx</div>
+          <div class="ex-cmd">systemctl list-dependencies --all nginx</div><div class="ex-comment"># Full dependency tree</div>
+          <div class="ex-cmd">systemctl show nginx -p Requires,Wants,After</div><div class="ex-comment"># Specific dependency properties</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">socket activation</span>
+      <a href="https://man7.org/linux/man-pages/man5/systemd.socket.5.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Systemd socket units — start services on demand when connection arrives</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl list-units --type=socket</div><div class="ex-comment"># All active socket units</div>
+          <div class="ex-cmd">systemctl status sshd.socket</div>
+          <div class="ex-cmd">systemctl cat sshd.socket</div><div class="ex-comment"># View socket unit definition</div>
+          <div class="ex-cmd">systemctl show nginx.socket -p ListenStream</div><div class="ex-comment"># What port/path it listens on</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemd-run</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemd-run.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Run a command as a transient systemd unit — with resource limits</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemd-run --unit=mytask ./script.sh</div><div class="ex-comment"># Run as transient service</div>
+          <div class="ex-cmd">systemd-run --on-calendar="*-*-* 03:00" /usr/bin/backup.sh</div><div class="ex-comment"># One-off scheduled run</div>
+          <div class="ex-cmd">systemd-run -p MemoryMax=512M -p CPUQuota=25% ./app</div><div class="ex-comment"># Run with resource limits</div>
+          <div class="ex-cmd">systemd-run --scope -p MemoryMax=1G ./heavy_process</div><div class="ex-comment"># Scope (group existing PID)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sys-targets" class="section">
+    <h3>Targets and cgroup resource management</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemctl (targets)</span>
+      <a href="https://man7.org/linux/man-pages/man7/systemd.special.7.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage runlevels — systemd targets replace SysV init levels</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemctl get-default</div><div class="ex-comment"># Default target (graphical / multi-user)</div>
+          <div class="ex-cmd">systemctl set-default multi-user.target</div><div class="ex-comment"># Boot to CLI (no GUI)</div>
+          <div class="ex-cmd">systemctl isolate rescue.target</div><div class="ex-comment"># Switch to rescue mode now</div>
+          <div class="ex-cmd">systemctl list-units --type=target</div><div class="ex-comment"># All active targets</div>
+          <div class="ex-cmd">systemctl poweroff</div>
+          <div class="ex-cmd">systemctl reboot</div>
+          <div class="ex-cmd">systemctl suspend</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+      <span class="cmd-name">systemd-cgtop</span>
+      <a href="https://man7.org/linux/man-pages/man1/systemd-cgtop.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Real-time cgroup resource usage — CPU, memory, I/O per service</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemd-cgtop</div><div class="ex-comment"># Interactive real-time cgroup monitor</div>
+          <div class="ex-cmd">systemd-cgtop -d 2</div><div class="ex-comment"># Refresh every 2 seconds</div>
+          <div class="ex-cmd">systemd-cgtop -m</div><div class="ex-comment"># Sort by memory</div>
+          <div class="ex-cmd">systemd-cgtop -n 1 -b</div><div class="ex-comment"># One-shot batch output</div>
+          <div class="ex-cmd">systemctl set-property nginx.service MemoryMax=512M</div><div class="ex-comment"># Limit memory at runtime</div>
+          <div class="ex-cmd">systemctl set-property nginx.service CPUQuota=50%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</script>
+</body>
+</html>
