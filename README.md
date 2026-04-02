@@ -18,6 +18,9 @@ Built as a standalone HTML file — no dependencies, no internet required, works
  
 ## Usage
  
-Just open `linux_sysadmin_reference.html` in your browser — no setup needed.
+Just open `index.html` in your browser — no setup needed.
  
 
+## Url page
+
+https://borjaortizllamas.github.io/linux-sysadmin-reference.github.io/
