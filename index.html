@@ -53,6 +53,47 @@
     min-height: 100vh;
   }
 
+  /* Hero header */
+  .site-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+  .site-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+  .site-header p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    max-width: 780px;
+    margin-bottom: 14px;
+  }
+  .site-header p:last-child {
+    margin-bottom: 0;
+  }
+  .header-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .header-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-tertiary);
+    background: var(--color-background-secondary);
+  }
+
   /* Section titles */
   .chapter-title {
     font-size: 17px;
@@ -107,10 +148,57 @@
   }
   .doc-link:hover { opacity: 1; }
   h3 { font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+
+  /* Site header */
+  .site-header {
+    max-width: 900px;
+    margin: 0 auto 2.5rem auto;
+    padding: 2rem 0 1.5rem 0;
+    border-bottom: 1px solid var(--color-border-secondary);
+  }
+  .site-title {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .site-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    margin-bottom: 0.6rem;
+    max-width: 760px;
+  }
+  .header-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 1.2rem;
+  }
+  .header-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-secondary);
+    font-weight: 500;
+  }
 </style>
 </head>
 <body>
 
+<header class="site-header">
+  <h1 class="site-title">🐧 Linux SysAdmin Reference</h1>
+  <p class="site-desc">A single-file interactive reference covering the most important Linux troubleshooting and administration commands, organized into five sections: Network, CPU &amp; Memory, Security, Storage, and Systemd.</p>
+  <p class="site-desc">Each command card is expandable and includes practical examples with inline comments, difficulty badges (<span class="badge b-new">recommended </span> / <span class="badge b-adv">advanced</span> / <span class="badge b-dep">deprecated</span>), and a direct link to the official documentation.</p>
+  <p class="site-desc">Built as a standalone HTML file — no dependencies, no internet required, works in any browser, and supports both light and dark mode automatically.</p>
+</header>
+
+
+<!-- ===== SITE HEADER ===== -->
 <!-- ===== CPU & MEMORY ===== -->
 <div class="chapter">
   <div class="chapter-title">🖥️ Linux CPU &amp; Memory Performance</div>
@@ -156,6 +244,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">htop <span class="badge b-new">recommended</span></span>
+      <a href="https://htop.dev/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Enhanced interactive process viewer with color, graphs, and mouse support</span>
       <span class="chevron">▼</span>
     </div>
@@ -220,6 +309,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">sar <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/sar.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">System Activity Reporter — historical CPU, memory, I/O data (sysstat package)</span>
       <span class="chevron">▼</span>
     </div>
@@ -238,6 +328,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">glances <span class="badge b-new">recommended</span></span>
+      <a href="https://nicolargo.github.io/glances/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">All-in-one monitoring dashboard: CPU, memory, I/O, network in one screen</span>
       <span class="chevron">▼</span>
     </div>
@@ -346,6 +437,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">stress / stress-ng <span class="badge b-adv">advanced</span></span>
+      <a href="https://github.com/ColinIanKing/stress-ng" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Generate synthetic CPU/memory/I/O load for testing and benchmarking</span>
       <span class="chevron">▼</span>
     </div>
@@ -422,6 +514,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">smem <span class="badge b-new">recommended</span></span>
+      <a href="https://www.selenic.com/smem/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Accurate per-process memory: USS, PSS, RSS accounting for shared memory</span>
       <span class="chevron">▼</span>
     </div>
@@ -462,6 +555,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">valgrind / heaptrack <span class="badge b-adv">advanced</span></span>
+      <a href="https://valgrind.org/docs/manual/manual.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Detect memory leaks, invalid accesses, and heap profiling in applications</span>
       <span class="chevron">▼</span>
     </div>
@@ -555,6 +649,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">strace <span class="badge b-adv">advanced</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/strace.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Trace system calls made by a process — diagnose hangs and slowdowns</span>
       <span class="chevron">▼</span>
     </div>
@@ -626,6 +721,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">schedtool <span class="badge b-adv">advanced</span></span>
+      <a href="https://linux.die.net/man/1/schedtool" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Query and set CPU affinity and scheduling parameters</span>
       <span class="chevron">▼</span>
     </div>
@@ -680,6 +776,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">iostat <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/iostat.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Per-device I/O throughput, utilization, and wait times</span>
       <span class="chevron">▼</span>
     </div>
@@ -703,6 +800,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">iotop <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/iotop.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Top-like view of disk I/O per process — find I/O-heavy processes instantly</span>
       <span class="chevron">▼</span>
     </div>
@@ -720,6 +818,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">fio <span class="badge b-adv">advanced</span></span>
+      <a href="https://fio.readthedocs.io/en/latest/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Flexible I/O benchmarking — test sequential, random, and mixed workloads</span>
       <span class="chevron">▼</span>
     </div>
@@ -752,6 +851,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">blktrace / blkparse <span class="badge b-adv">advanced</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/blktrace.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Block I/O tracing — see exact I/O requests, queuing, and dispatch times</span>
       <span class="chevron">▼</span>
     </div>
@@ -772,6 +872,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">perf <span class="badge b-adv">advanced</span></span>
+      <a href="https://perf.wiki.kernel.org/index.php/Main_Page" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Linux performance counter tool — CPU cycles, cache misses, function profiling</span>
       <span class="chevron">▼</span>
     </div>
@@ -807,6 +908,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">bpftrace <span class="badge b-adv">advanced</span></span>
+      <a href="https://bpftrace.org/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">High-level eBPF tracing language for custom kernel and userspace probes</span>
       <span class="chevron">▼</span>
     </div>
@@ -823,6 +925,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">BCC tools <span class="badge b-adv">advanced</span></span>
+      <a href="https://github.com/iovisor/bcc" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Pre-built eBPF tools from BPF Compiler Collection (BCC)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1037,6 +1140,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">ifconfig <span class="badge b-dep">deprecated</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/ifconfig.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Classic alternative to ip a (net-tools package)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1085,6 +1189,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">nmcli <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/nmcli.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Full network management with NetworkManager from CLI</span>
       <span class="chevron">▼</span>
     </div>
@@ -1156,6 +1261,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">mtr <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/mtr.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Combines ping + traceroute in real time. Great for diagnosing packet loss</span>
       <span class="chevron">▼</span>
     </div>
@@ -1188,6 +1294,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">hping3 <span class="badge b-adv">advanced</span></span>
+      <a href="https://linux.die.net/man/8/hping3" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Advanced ping with full control over TCP/UDP/ICMP packets</span>
       <span class="chevron">▼</span>
     </div>
@@ -1223,6 +1330,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">dig <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/dig.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Detailed DNS query with timing, TTL and server used</span>
       <span class="chevron">▼</span>
     </div>
@@ -1326,6 +1434,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">ss <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/ss.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Active sockets: TCP, UDP, UNIX. Replaces netstat</span>
       <span class="chevron">▼</span>
     </div>
@@ -1343,6 +1452,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">netstat <span class="badge b-dep">deprecated</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/netstat.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">View connections and ports (classic, net-tools package)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1375,6 +1485,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">nmap <span class="badge b-adv">advanced</span></span>
+      <a href="https://nmap.org/book/man.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Port and service scanning on remote hosts</span>
       <span class="chevron">▼</span>
     </div>
@@ -1480,6 +1591,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">tcpdump <span class="badge b-adv">advanced</span></span>
+      <a href="https://www.tcpdump.org/manpages/tcpdump.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Capture and filter packets in real time from the terminal</span>
       <span class="chevron">▼</span>
     </div>
@@ -1529,6 +1641,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">ngrep <span class="badge b-adv">advanced</span></span>
+      <a href="https://linux.die.net/man/8/ngrep" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Grep over network traffic — search patterns in packet payloads</span>
       <span class="chevron">▼</span>
     </div>
@@ -1580,6 +1693,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">nft (nftables) <span class="badge b-new">modern</span></span>
+      <a href="https://www.netfilter.org/projects/nftables/manpage.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Replaces iptables on modern systems (kernel 3.13+)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1702,6 +1816,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">wg / wg-quick <span class="badge b-new">modern</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/wg.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">WireGuard: modern, fast VPN with state-of-the-art cryptography</span>
       <span class="chevron">▼</span>
     </div>
@@ -1791,6 +1906,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">iperf3 <span class="badge b-new">recommended</span></span>
+      <a href="https://software.es.net/iperf/invoking.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Measure real throughput between two hosts (TCP and UDP)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1825,6 +1941,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">tc (traffic control) <span class="badge b-adv">advanced</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/tc.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">QoS, shaping, and network condition simulation (latency, loss)</span>
       <span class="chevron">▼</span>
     </div>
@@ -1859,6 +1976,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">perf / bpftrace <span class="badge b-adv">advanced</span></span>
+      <a href="https://perf.wiki.kernel.org/index.php/Main_Page" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Kernel profiling and network call tracing with eBPF</span>
       <span class="chevron">▼</span>
     </div>
@@ -1877,6 +1995,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">iwconfig <span class="badge b-dep">deprecated</span></span>
+      <a href="https://linux.die.net/man/8/iwconfig" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Wi-Fi interface state: ESSID, frequency, signal strength</span>
       <span class="chevron">▼</span>
     </div>
@@ -1892,6 +2011,7 @@
   <div class="cmd-card">
     <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">iw <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man8/iw.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
       <span class="cmd-desc">Modern Wi-Fi management: scan, BSS info, station statistics</span>
       <span class="chevron">▼</span>
     </div>
@@ -1959,27 +2079,6 @@
 </div>
 
 </div>
-
-<script>
-function showTab(prefix, name, el) {
-  // Only affect sections and tabs within the same chapter
-  const activeSection = document.getElementById(prefix + '-' + name);
-  if (!activeSection) return;
-  // Find parent chapter
-  const chapter = activeSection.closest('.chapter');
-  chapter.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  chapter.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  activeSection.classList.add('active');
-  el.classList.add('active');
-}
-
-function toggle(header) {
-  const body = header.nextElementSibling;
-  const chev = header.querySelector('.chevron');
-  body.classList.toggle('open');
-  chev.classList.toggle('open');
-}
-</script>
 
 <!-- ===== SECURITY ===== -->
 <div class="chapter">
@@ -2053,6 +2152,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">lynis <span class="badge b-new">recommended</span></span>
+      <a href="https://cisofy.com/documentation/lynis/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">Full system security audit — checks hardening, configs, vulnerabilities</span>
         <span class="chevron">▼</span>
       </div>
@@ -2253,6 +2353,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">AIDE / tripwire <span class="badge b-new">recommended</span></span>
+      <a href="https://aide.github.io/doc/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">File integrity monitoring — detect unauthorized changes to system files</span>
         <span class="chevron">▼</span>
       </div>
@@ -2359,6 +2460,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">opensnoop / execsnoop <span class="badge b-adv">advanced</span></span>
+      <a href="https://github.com/iovisor/bcc/blob/master/tools/opensnoop.py" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">eBPF-based real-time tracing of file opens and process execution</span>
         <span class="chevron">▼</span>
       </div>
@@ -2491,6 +2593,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">ncdu <span class="badge b-new">recommended</span></span>
+      <a href="https://dev.yorhel.nl/ncdu/man" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">Interactive ncurses disk usage browser — navigate and find space hogs</span>
         <span class="chevron">▼</span>
       </div>
@@ -2740,6 +2843,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">smartctl <span class="badge b-new">recommended</span></span>
+      <a href="https://www.smartmontools.org/browser/trunk/smartmontools/smartctl.8.in" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">Query S.M.A.R.T. data and run disk health tests</span>
         <span class="chevron">▼</span>
       </div>
@@ -2910,6 +3014,7 @@ function toggle(header) {
     <div class="cmd-card">
       <div class="cmd-header" onclick="toggle(this)">
       <span class="cmd-name">systemd-analyze <span class="badge b-new">recommended</span></span>
+      <a href="https://man7.org/linux/man-pages/man1/systemd-analyze.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
         <span class="cmd-desc">Profile boot time — find slow services and bottlenecks</span>
         <span class="chevron">▼</span>
       </div>
@@ -3093,6 +3198,23 @@ function toggle(header) {
   </div>
 </div>
 
+<script>
+function showTab(prefix, name, el) {
+  const activeSection = document.getElementById(prefix + '-' + name);
+  if (!activeSection) return;
+  const chapter = activeSection.closest('.chapter');
+  chapter.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  chapter.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  activeSection.classList.add('active');
+  el.classList.add('active');
+}
+
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const chev = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
 </script>
 </body>
 </html>
