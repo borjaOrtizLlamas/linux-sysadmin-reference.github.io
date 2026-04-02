@@ -192,7 +192,7 @@
 
 <header class="site-header">
   <h1 class="site-title">🐧 Linux SysAdmin Reference</h1>
-  <p class="site-desc">A single-file interactive reference covering the most important Linux troubleshooting and administration commands, organized into five sections: Network, CPU &amp; Memory, Security, Storage, and Systemd.</p>
+  <p class="site-desc">A single-file interactive reference covering the most important Linux troubleshooting and administration commands, organized into eight sections: Network, CPU &amp; Memory, Security, Storage, Systemd, Kernel &amp; Hardware, Backup &amp; Recovery, and Containers &amp; Virtualization.</p>
   <p class="site-desc">Each command card is expandable and includes practical examples with inline comments, difficulty badges (<span class="badge b-new">recommended </span> / <span class="badge b-adv">advanced</span> / <span class="badge b-dep">deprecated</span>), and a direct link to the official documentation.</p>
   <p class="site-desc">Built as a standalone HTML file — no dependencies, no internet required, works in any browser, and supports both light and dark mode automatically.</p>
 </header>
@@ -3192,6 +3192,1072 @@
           <div class="ex-cmd">systemd-cgtop -n 1 -b</div><div class="ex-comment"># One-shot batch output</div>
           <div class="ex-cmd">systemctl set-property nginx.service MemoryMax=512M</div><div class="ex-comment"># Limit memory at runtime</div>
           <div class="ex-cmd">systemctl set-property nginx.service CPUQuota=50%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KERNEL & HARDWARE ===== -->
+<div class="chapter">
+  <div class="chapter-title">⚙️ Kernel &amp; Hardware</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('hw', 'info', this)">Hardware Info</div>
+    <div class="tab" onclick="showTab('hw', 'modules', this)">Kernel Modules</div>
+    <div class="tab" onclick="showTab('hw', 'udev', this)">Device Management</div>
+    <div class="tab" onclick="showTab('hw', 'firmware', this)">Boot &amp; Firmware</div>
+  </div>
+
+  <div id="hw-info" class="section active">
+    <h3>Hardware discovery and inspection</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lspci</span>
+        <a href="https://man7.org/linux/man-pages/man8/lspci.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">List all PCI devices: GPUs, NICs, storage controllers</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lspci</div><div class="ex-comment"># All PCI devices summary</div>
+          <div class="ex-cmd">lspci -v</div><div class="ex-comment"># Verbose: driver, IRQ, memory regions</div>
+          <div class="ex-cmd">lspci -k</div><div class="ex-comment"># Show kernel driver in use for each device</div>
+          <div class="ex-cmd">lspci -nn</div><div class="ex-comment"># Include vendor/device IDs (useful for lookups)</div>
+          <div class="ex-cmd">lspci | grep -i 'vga\|3d\|display'</div><div class="ex-comment"># Find GPU(s)</div>
+          <div class="ex-cmd">lspci | grep -i net</div><div class="ex-comment"># Network controllers only</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lsusb</span>
+        <a href="https://man7.org/linux/man-pages/man8/lsusb.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">List USB buses and connected devices with vendor/product IDs</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lsusb</div><div class="ex-comment"># All USB devices</div>
+          <div class="ex-cmd">lsusb -v</div><div class="ex-comment"># Verbose device info (requires root)</div>
+          <div class="ex-cmd">lsusb -t</div><div class="ex-comment"># Tree view: bus topology and speed</div>
+          <div class="ex-cmd">lsusb -d 046d:c52b</div><div class="ex-comment"># Filter by vendor:product ID</div>
+          <div class="ex-cmd">watch -n 2 lsusb</div><div class="ex-comment"># Monitor USB device plug/unplug</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lshw <span class="badge b-new">recommended</span></span>
+        <a href="https://linux.die.net/man/1/lshw" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Detailed hardware configuration: CPU, memory, disks, NICs</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lshw</div><div class="ex-comment"># Full hardware report (requires root)</div>
+          <div class="ex-cmd">lshw -short</div><div class="ex-comment"># Compact one-line-per-device view</div>
+          <div class="ex-cmd">lshw -class memory</div><div class="ex-comment"># RAM slots, size, speed</div>
+          <div class="ex-cmd">lshw -class disk -class storage</div><div class="ex-comment"># Disk and storage controllers</div>
+          <div class="ex-cmd">lshw -html > hardware.html</div><div class="ex-comment"># Export to HTML report</div>
+          <div class="ex-cmd">lshw -json</div><div class="ex-comment"># JSON output for automation</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">dmidecode</span>
+        <a href="https://linux.die.net/man/8/dmidecode" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Read BIOS/UEFI DMI table: serial numbers, memory slots, chassis info</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">dmidecode -t system</div><div class="ex-comment"># Vendor, model, serial number</div>
+          <div class="ex-cmd">dmidecode -t memory</div><div class="ex-comment"># RAM slots, size, speed, manufacturer</div>
+          <div class="ex-cmd">dmidecode -t bios</div><div class="ex-comment"># BIOS version and release date</div>
+          <div class="ex-cmd">dmidecode -t processor</div><div class="ex-comment"># CPU socket, cores, max speed</div>
+          <div class="ex-cmd">dmidecode -s system-serial-number</div><div class="ex-comment"># Just the serial number (good for scripts)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">uname / hostnamectl</span>
+        <a href="https://man7.org/linux/man-pages/man1/uname.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Kernel version, architecture, and OS identity</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">uname -r</div><div class="ex-comment"># Running kernel version</div>
+          <div class="ex-cmd">uname -a</div><div class="ex-comment"># All: kernel, hostname, arch, build date</div>
+          <div class="ex-cmd">hostnamectl</div><div class="ex-comment"># OS, kernel, virtualization, hardware (systemd)</div>
+          <div class="ex-cmd">cat /etc/os-release</div><div class="ex-comment"># Distro name, version, ID</div>
+          <div class="ex-cmd">arch</div><div class="ex-comment"># CPU architecture (x86_64, aarch64, etc.)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">sensors / lm-sensors</span>
+        <a href="https://github.com/lm-sensors/lm-sensors" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Read CPU, GPU, and motherboard temperature and fan speed sensors</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">sensors</div><div class="ex-comment"># All sensor readings (install: apt install lm-sensors)</div>
+          <div class="ex-cmd">sensors-detect</div><div class="ex-comment"># Auto-detect sensor chips (run once after install)</div>
+          <div class="ex-cmd">sensors -u</div><div class="ex-comment"># Raw values in machine-readable format</div>
+          <div class="ex-cmd">watch -n 2 sensors</div><div class="ex-comment"># Monitor temperatures in real time</div>
+          <div class="ex-cmd">cat /sys/class/thermal/thermal_zone*/temp</div><div class="ex-comment"># Raw kernel thermal zone values (÷1000 = °C)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hw-modules" class="section">
+    <h3>Kernel modules</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lsmod</span>
+        <a href="https://man7.org/linux/man-pages/man8/lsmod.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">List currently loaded kernel modules and their use count</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lsmod</div><div class="ex-comment"># All loaded modules: name, size, use count</div>
+          <div class="ex-cmd">lsmod | grep nvidia</div><div class="ex-comment"># Check if a specific module is loaded</div>
+          <div class="ex-cmd">cat /proc/modules</div><div class="ex-comment"># Raw kernel module list</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">modprobe</span>
+        <a href="https://man7.org/linux/man-pages/man8/modprobe.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Load and unload kernel modules with automatic dependency resolution</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">modprobe br_netfilter</div><div class="ex-comment"># Load a module (with all deps)</div>
+          <div class="ex-cmd">modprobe -r br_netfilter</div><div class="ex-comment"># Unload a module</div>
+          <div class="ex-cmd">modprobe -n -v br_netfilter</div><div class="ex-comment"># Dry run — show what would be loaded</div>
+          <div class="ex-cmd">echo "br_netfilter" >> /etc/modules-load.d/k8s.conf</div><div class="ex-comment"># Persist load across reboots</div>
+          <div class="ex-cmd">echo "options usb_storage quirks=0781:5406:u" >> /etc/modprobe.d/usb.conf</div><div class="ex-comment"># Persist module options</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">modinfo</span>
+        <a href="https://man7.org/linux/man-pages/man8/modinfo.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Module metadata: version, author, available parameters, dependencies</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">modinfo ext4</div><div class="ex-comment"># Full module info</div>
+          <div class="ex-cmd">modinfo -F version ext4</div><div class="ex-comment"># Only the version field</div>
+          <div class="ex-cmd">modinfo -F parm e1000e</div><div class="ex-comment"># Available parameters for a module</div>
+          <div class="ex-cmd">modinfo -F depends vboxdrv</div><div class="ex-comment"># Module dependency list</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">dkms <span class="badge b-new">recommended</span></span>
+        <a href="https://github.com/dell/dkms" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Dynamic Kernel Module Support — rebuild out-of-tree modules on kernel upgrade</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">dkms status</div><div class="ex-comment"># List all DKMS modules and build status</div>
+          <div class="ex-cmd">dkms install -m nvidia -v 535.154.05</div><div class="ex-comment"># Build and install a DKMS module</div>
+          <div class="ex-cmd">dkms remove -m vboxhost -v 7.0.12 --all</div><div class="ex-comment"># Remove module for all kernels</div>
+          <div class="ex-cmd">dkms build -m wireguard -v 1.0.0</div><div class="ex-comment"># Build without installing</div>
+          <div class="ex-cmd">dkms autoinstall</div><div class="ex-comment"># Rebuild all DKMS modules for current kernel</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">depmod / update-initramfs</span>
+        <a href="https://man7.org/linux/man-pages/man8/depmod.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Rebuild module dependency map and regenerate initramfs</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">depmod -a</div><div class="ex-comment"># Regenerate module dependency files</div>
+          <div class="ex-cmd">update-initramfs -u</div><div class="ex-comment"># Update initramfs for current kernel (Debian/Ubuntu)</div>
+          <div class="ex-cmd">update-initramfs -u -k all</div><div class="ex-comment"># Update for all installed kernels</div>
+          <div class="ex-cmd">dracut --force</div><div class="ex-comment"># Regenerate initrd (RHEL/Fedora)</div>
+          <div class="ex-cmd">mkinitcpio -P</div><div class="ex-comment"># Rebuild all initramfs presets (Arch)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hw-udev" class="section">
+    <h3>udev — device event management</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">udevadm</span>
+        <a href="https://man7.org/linux/man-pages/man8/udevadm.8.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Query udev database, monitor events, test and reload rules</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">udevadm monitor</div><div class="ex-comment"># Watch device events in real time (plug/unplug)</div>
+          <div class="ex-cmd">udevadm info -a -n /dev/sda</div><div class="ex-comment"># All attributes for a device (use to write rules)</div>
+          <div class="ex-cmd">udevadm info -q all -n /dev/sda</div><div class="ex-comment"># Device properties</div>
+          <div class="ex-cmd">udevadm test /sys/block/sda</div><div class="ex-comment"># Simulate rule processing for a device</div>
+          <div class="ex-cmd">udevadm control --reload-rules && udevadm trigger</div><div class="ex-comment"># Reload rules and re-trigger events</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">udev rules</span>
+        <a href="https://www.freedesktop.org/software/systemd/man/udev_rules.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Write persistent device naming, permissions, and action rules</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Rule files location</div>
+          <div class="ex-cmd">/etc/udev/rules.d/</div><div class="ex-comment"># Custom rules (lower number = higher priority)</div>
+          <div class="ex-cmd">/lib/udev/rules.d/</div><div class="ex-comment"># System rules (do not edit)</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Example rules</div>
+          <div class="ex-cmd">SUBSYSTEM=="usb", ATTR{idVendor}=="046d", MODE="0666"</div><div class="ex-comment"># Set permissions for Logitech USB devices</div>
+          <div class="ex-cmd">KERNEL=="sd*", ATTRS{serial}=="ABC123", SYMLINK+="mydisk"</div><div class="ex-comment"># Persistent /dev/mydisk symlink by serial</div>
+          <div class="ex-cmd">ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:bb:cc:dd:ee:ff", NAME="eth-mgmt"</div><div class="ex-comment"># Rename NIC by MAC address</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">sysfs (/sys)</span>
+        <a href="https://www.kernel.org/doc/html/latest/filesystems/sysfs.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Virtual filesystem exposing kernel objects, device attributes, and tunables</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ls /sys/block/</div><div class="ex-comment"># All block devices</div>
+          <div class="ex-cmd">cat /sys/block/sda/size</div><div class="ex-comment"># Disk size in 512-byte sectors</div>
+          <div class="ex-cmd">cat /sys/class/net/eth0/speed</div><div class="ex-comment"># NIC link speed in Mbps</div>
+          <div class="ex-cmd">cat /sys/class/power_supply/BAT0/capacity</div><div class="ex-comment"># Battery percentage</div>
+          <div class="ex-cmd">cat /sys/class/thermal/thermal_zone0/temp</div><div class="ex-comment"># CPU temp in millidegrees</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hw-firmware" class="section">
+    <h3>Boot, UEFI &amp; firmware</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">fwupdmgr <span class="badge b-new">recommended</span></span>
+        <a href="https://fwupd.org/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Update device firmware (BIOS, NVMe, Thunderbolt) from Linux via LVFS</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">fwupdmgr get-devices</div><div class="ex-comment"># List devices with firmware support</div>
+          <div class="ex-cmd">fwupdmgr refresh</div><div class="ex-comment"># Refresh firmware update metadata</div>
+          <div class="ex-cmd">fwupdmgr get-updates</div><div class="ex-comment"># Check for available updates</div>
+          <div class="ex-cmd">fwupdmgr update</div><div class="ex-comment"># Apply all available firmware updates</div>
+          <div class="ex-cmd">fwupdmgr get-history</div><div class="ex-comment"># Show firmware update history</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">efibootmgr</span>
+        <a href="https://linux.die.net/man/8/efibootmgr" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage UEFI boot entries and boot order</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">efibootmgr -v</div><div class="ex-comment"># List all boot entries with details</div>
+          <div class="ex-cmd">efibootmgr -o 0001,0002,0003</div><div class="ex-comment"># Set boot order</div>
+          <div class="ex-cmd">efibootmgr -n 0001</div><div class="ex-comment"># Boot this entry once on next reboot only</div>
+          <div class="ex-cmd">efibootmgr -b 0001 -A</div><div class="ex-comment"># Disable a boot entry</div>
+          <div class="ex-cmd">efibootmgr -b 0001 -B</div><div class="ex-comment"># Delete a boot entry permanently</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">ipmitool <span class="badge b-adv">advanced</span></span>
+        <a href="https://linux.die.net/man/1/ipmitool" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">IPMI/BMC interface — remote power control, sensors, SEL on servers</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">ipmitool sdr list</div><div class="ex-comment"># All sensor readings from BMC</div>
+          <div class="ex-cmd">ipmitool sel list</div><div class="ex-comment"># System Event Log</div>
+          <div class="ex-cmd">ipmitool chassis status</div><div class="ex-comment"># Power state and chassis info</div>
+          <div class="ex-cmd">ipmitool -H 10.0.0.5 -U admin -P pass chassis power cycle</div><div class="ex-comment"># Remote power cycle</div>
+          <div class="ex-cmd">ipmitool lan print 1</div><div class="ex-comment"># BMC network configuration</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BACKUP & RECOVERY ===== -->
+<div class="chapter">
+  <div class="chapter-title">💾 Backup &amp; Recovery</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('bkp', 'sync', this)">File Sync</div>
+    <div class="tab" onclick="showTab('bkp', 'archives', this)">Archives</div>
+    <div class="tab" onclick="showTab('bkp', 'snapshots', this)">Snapshots</div>
+    <div class="tab" onclick="showTab('bkp', 'imaging', this)">Disk Imaging</div>
+  </div>
+
+  <div id="bkp-sync" class="section active">
+    <h3>File synchronization</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">rsync <span class="badge b-new">recommended</span></span>
+        <a href="https://man7.org/linux/man-pages/man1/rsync.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Fast incremental file transfer — local or remote, delta-only sync</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">rsync -avh /src/ /dst/</div><div class="ex-comment"># Archive mode, verbose, human-readable</div>
+          <div class="ex-cmd">rsync -avh --delete /src/ /dst/</div><div class="ex-comment"># Mirror: delete files not in src</div>
+          <div class="ex-cmd">rsync -avzh /src/ user@host:/dst/</div><div class="ex-comment"># Remote sync with compression</div>
+          <div class="ex-cmd">rsync -avhn /src/ /dst/</div><div class="ex-comment"># Dry run — show what would change</div>
+          <div class="ex-cmd">rsync -avh --exclude='*.log' --exclude='.git' /src/ /dst/</div><div class="ex-comment"># Exclude patterns</div>
+          <div class="ex-cmd">rsync -avh --bwlimit=10000 /src/ user@host:/dst/</div><div class="ex-comment"># Limit bandwidth to 10 MB/s</div>
+          <div class="ex-cmd">rsync -e "ssh -p 2222" -avh /src/ user@host:/dst/</div><div class="ex-comment"># Custom SSH port</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Key flags</div>
+          <div class="ex-cmd">-a</div><div class="ex-comment"># Archive: recursive + preserve perms, times, symlinks, owner</div>
+          <div class="ex-cmd">-z</div><div class="ex-comment"># Compress during transfer (good for slow links)</div>
+          <div class="ex-cmd">--progress</div><div class="ex-comment"># Show per-file transfer progress</div>
+          <div class="ex-cmd">--checksum</div><div class="ex-comment"># Compare by checksum, not mtime (slower but accurate)</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">scp / sftp</span>
+        <a href="https://man7.org/linux/man-pages/man1/scp.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Secure copy over SSH — simpler than rsync for one-off transfers</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">scp file.txt user@host:/remote/path/</div><div class="ex-comment"># Upload a file</div>
+          <div class="ex-cmd">scp user@host:/remote/file.txt ./</div><div class="ex-comment"># Download a file</div>
+          <div class="ex-cmd">scp -r /local/dir user@host:/remote/</div><div class="ex-comment"># Recursive directory copy</div>
+          <div class="ex-cmd">scp -P 2222 file.txt user@host:/path/</div><div class="ex-comment"># Custom SSH port</div>
+          <div class="ex-cmd">sftp user@host</div><div class="ex-comment"># Interactive SFTP session (get, put, ls)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bkp-archives" class="section">
+    <h3>Archiving and compression</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">tar <span class="badge b-new">recommended</span></span>
+        <a href="https://man7.org/linux/man-pages/man1/tar.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Create and extract archives — the standard Linux backup format</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Create archives</div>
+          <div class="ex-cmd">tar -czvf archive.tar.gz /path/to/dir</div><div class="ex-comment"># Create gzip-compressed archive</div>
+          <div class="ex-cmd">tar -cjvf archive.tar.bz2 /path/</div><div class="ex-comment"># bzip2 compression (slower, better ratio)</div>
+          <div class="ex-cmd">tar -cJvf archive.tar.xz /path/</div><div class="ex-comment"># xz compression (best ratio)</div>
+          <div class="ex-cmd">tar -cvf archive.tar /path/ --exclude='*.log'</div><div class="ex-comment"># No compression, with exclusions</div>
+          <div class="ex-cmd">tar -czvf - /path/ | ssh user@host "cat > /backup/archive.tar.gz"</div><div class="ex-comment"># Stream directly over SSH</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Extract archives</div>
+          <div class="ex-cmd">tar -xzvf archive.tar.gz</div><div class="ex-comment"># Extract to current directory</div>
+          <div class="ex-cmd">tar -xzvf archive.tar.gz -C /target/dir</div><div class="ex-comment"># Extract to specific directory</div>
+          <div class="ex-cmd">tar -tzvf archive.tar.gz</div><div class="ex-comment"># List contents without extracting</div>
+          <div class="ex-cmd">tar -xzvf archive.tar.gz path/to/single/file</div><div class="ex-comment"># Extract a single file</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">gzip / bzip2 / xz / zstd</span>
+        <a href="https://man7.org/linux/man-pages/man1/gzip.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Standalone compression tools — trade speed vs ratio</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">gzip -k file.log</div><div class="ex-comment"># Compress, keep original (-k)</div>
+          <div class="ex-cmd">gunzip file.log.gz</div><div class="ex-comment"># Decompress</div>
+          <div class="ex-cmd">zstd -T0 -19 bigfile</div><div class="ex-comment"># zstd max compression, all CPU threads</div>
+          <div class="ex-cmd">zstd -d file.zst</div><div class="ex-comment"># Decompress zstd</div>
+          <div class="ex-cmd">xz -9 -T0 file</div><div class="ex-comment"># xz max compression, multithreaded</div>
+          <div class="ex-cmd">xz -d file.xz</div><div class="ex-comment"># Decompress xz</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Speed vs ratio cheat sheet</div>
+          <div class="ex-cmd">gzip</div><div class="ex-comment"># Fast, decent ratio — best for logs and scripts</div>
+          <div class="ex-cmd">zstd</div><div class="ex-comment"># Fast + good ratio — best modern choice</div>
+          <div class="ex-cmd">bzip2</div><div class="ex-comment"># Slow, good ratio — largely superseded</div>
+          <div class="ex-cmd">xz</div><div class="ex-comment"># Slowest, best ratio — best for distribution packages</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">zip / unzip</span>
+        <a href="https://linux.die.net/man/1/zip" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Cross-platform archives — useful when sharing with Windows/macOS users</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">zip -r archive.zip /path/to/dir</div><div class="ex-comment"># Recursive zip</div>
+          <div class="ex-cmd">zip -r archive.zip /path/ -x "*.git*"</div><div class="ex-comment"># Exclude patterns</div>
+          <div class="ex-cmd">unzip archive.zip</div><div class="ex-comment"># Extract to current directory</div>
+          <div class="ex-cmd">unzip archive.zip -d /target/</div><div class="ex-comment"># Extract to specific directory</div>
+          <div class="ex-cmd">unzip -l archive.zip</div><div class="ex-comment"># List contents without extracting</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bkp-snapshots" class="section">
+    <h3>Deduplicated snapshot backups</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">restic <span class="badge b-new">recommended</span></span>
+        <a href="https://restic.readthedocs.io/en/latest/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Fast, encrypted, deduplicated backups to local or cloud storage</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">restic init --repo /mnt/backup</div><div class="ex-comment"># Initialize a new repository</div>
+          <div class="ex-cmd">restic -r /mnt/backup backup /home/user</div><div class="ex-comment"># Create a snapshot</div>
+          <div class="ex-cmd">restic -r /mnt/backup snapshots</div><div class="ex-comment"># List all snapshots</div>
+          <div class="ex-cmd">restic -r /mnt/backup restore latest --target /tmp/restore</div><div class="ex-comment"># Restore latest snapshot</div>
+          <div class="ex-cmd">restic -r /mnt/backup forget --keep-daily 7 --keep-weekly 4 --prune</div><div class="ex-comment"># Apply retention policy</div>
+          <div class="ex-cmd">restic -r /mnt/backup check</div><div class="ex-comment"># Verify repository integrity</div>
+          <div class="ex-cmd">restic -r s3:s3.amazonaws.com/bucket backup /data</div><div class="ex-comment"># Backup directly to S3</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">borgbackup <span class="badge b-new">recommended</span></span>
+        <a href="https://borgbackup.readthedocs.io/en/stable/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Deduplicating, compressed, encrypted backup with pruning and FUSE mount</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">borg init --encryption=repokey /mnt/backup/repo</div><div class="ex-comment"># Initialize with encryption</div>
+          <div class="ex-cmd">borg create /mnt/backup/repo::backup-{now:%Y-%m-%d} /home /etc</div><div class="ex-comment"># Create named snapshot</div>
+          <div class="ex-cmd">borg list /mnt/backup/repo</div><div class="ex-comment"># List all archives</div>
+          <div class="ex-cmd">borg extract /mnt/backup/repo::backup-2024-01-01 home/user/docs</div><div class="ex-comment"># Extract specific path</div>
+          <div class="ex-cmd">borg mount /mnt/backup/repo /mnt/restore</div><div class="ex-comment"># Mount as FUSE filesystem for browsing</div>
+          <div class="ex-cmd">borg prune -v --keep-daily=7 --keep-weekly=4 /mnt/backup/repo</div><div class="ex-comment"># Apply retention policy</div>
+          <div class="ex-cmd">borg check /mnt/backup/repo</div><div class="ex-comment"># Verify repository consistency</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">duplicity</span>
+        <a href="https://duplicity.gitlab.io/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Encrypted incremental backups to S3, SFTP, FTP, and more</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">duplicity /home/user s3://my-bucket/backup</div><div class="ex-comment"># Backup to S3</div>
+          <div class="ex-cmd">duplicity --full-if-older-than 30D /home/user s3://my-bucket/backup</div><div class="ex-comment"># Full backup if last full &gt; 30 days</div>
+          <div class="ex-cmd">duplicity list-current-files s3://my-bucket/backup</div><div class="ex-comment"># List backed-up files</div>
+          <div class="ex-cmd">duplicity restore s3://my-bucket/backup /tmp/restore</div><div class="ex-comment"># Restore latest</div>
+          <div class="ex-cmd">duplicity remove-older-than 60D s3://my-bucket/backup</div><div class="ex-comment"># Remove old backups</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bkp-imaging" class="section">
+    <h3>Disk and partition imaging</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">dd (disk imaging)</span>
+        <a href="https://man7.org/linux/man-pages/man1/dd.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Low-level block-for-block disk and partition cloning</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">dd if=/dev/sda of=/mnt/backup/sda.img bs=4M status=progress</div><div class="ex-comment"># Full disk image</div>
+          <div class="ex-cmd">dd if=/dev/sda1 of=/mnt/backup/sda1.img bs=4M status=progress</div><div class="ex-comment"># Single partition image</div>
+          <div class="ex-cmd">dd if=/mnt/backup/sda.img of=/dev/sdb bs=4M status=progress</div><div class="ex-comment"># Restore image to disk</div>
+          <div class="ex-cmd">dd if=/dev/sda bs=512 count=1 of=mbr.bin</div><div class="ex-comment"># Backup MBR only (first 512 bytes)</div>
+          <div class="ex-cmd">dd if=/dev/urandom of=/dev/sda bs=4M status=progress</div><div class="ex-comment"># Securely wipe disk</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Pipe with compression</div>
+          <div class="ex-cmd">dd if=/dev/sda bs=4M | gzip -c > sda.img.gz</div><div class="ex-comment"># Compressed image</div>
+          <div class="ex-cmd">gunzip -c sda.img.gz | dd of=/dev/sda bs=4M status=progress</div><div class="ex-comment"># Restore compressed image</div>
+          <div class="ex-cmd">dd if=/dev/sda bs=4M | zstd -T0 > sda.img.zst</div><div class="ex-comment"># Faster with zstd</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">testdisk / photorec <span class="badge b-adv">advanced</span></span>
+        <a href="https://www.cgsecurity.org/wiki/TestDisk" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Recover lost partitions and deleted files from damaged disks</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">testdisk /dev/sda</div><div class="ex-comment"># Interactive partition recovery — Analyse → Quick Search</div>
+          <div class="ex-cmd">photorec /dev/sda</div><div class="ex-comment"># Recover deleted files by file signature</div>
+          <div class="ex-cmd">testdisk disk_image.img</div><div class="ex-comment"># Operate on a disk image instead of live device</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">partclone</span>
+        <a href="https://partclone.org/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Filesystem-aware partition cloning — only copies used blocks, much faster than dd</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">partclone.ext4 -c -s /dev/sda1 -o sda1.img</div><div class="ex-comment"># Clone ext4 partition</div>
+          <div class="ex-cmd">partclone.ext4 -r -s sda1.img -o /dev/sda1</div><div class="ex-comment"># Restore ext4 image</div>
+          <div class="ex-cmd">partclone.ext4 -c -s /dev/sda1 | gzip > sda1.img.gz</div><div class="ex-comment"># Clone with compression</div>
+          <div class="ex-cmd">partclone.ntfs -c -s /dev/sda1 -o sda1.img</div><div class="ex-comment"># NTFS partition</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTAINERS & VIRTUALIZATION ===== -->
+<div class="chapter">
+  <div class="chapter-title">🐳 Containers &amp; Virtualization</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('ctr', 'docker', this)">Docker / Podman</div>
+    <div class="tab" onclick="showTab('ctr', 'k8s', this)">Kubernetes</div>
+    <div class="tab" onclick="showTab('ctr', 'kvm', this)">KVM / QEMU</div>
+    <div class="tab" onclick="showTab('ctr', 'build', this)">Build &amp; Provision</div>
+    <div class="tab" onclick="showTab('ctr', 'lxc', this)">LXC / LXD</div>
+  </div>
+
+  <div id="ctr-docker" class="section active">
+    <h3>Docker &amp; Podman — container management</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">docker (basics) <span class="badge b-new">recommended</span></span>
+        <a href="https://docs.docker.com/reference/cli/docker/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Run, inspect, and manage containers and images</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Containers</div>
+          <div class="ex-cmd">docker ps</div><div class="ex-comment"># Running containers</div>
+          <div class="ex-cmd">docker ps -a</div><div class="ex-comment"># All containers including stopped</div>
+          <div class="ex-cmd">docker run -d -p 8080:80 --name web nginx</div><div class="ex-comment"># Run detached with port mapping</div>
+          <div class="ex-cmd">docker run -it --rm ubuntu bash</div><div class="ex-comment"># Interactive, auto-remove on exit</div>
+          <div class="ex-cmd">docker exec -it web bash</div><div class="ex-comment"># Shell into running container</div>
+          <div class="ex-cmd">docker stop web && docker rm web</div><div class="ex-comment"># Stop and remove</div>
+          <div class="ex-cmd">docker logs -f web</div><div class="ex-comment"># Follow container logs</div>
+          <div class="ex-cmd">docker inspect web</div><div class="ex-comment"># Full container metadata (JSON)</div>
+          <div class="ex-cmd">docker stats</div><div class="ex-comment"># Live CPU/memory usage per container</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Images</div>
+          <div class="ex-cmd">docker images</div><div class="ex-comment"># List local images</div>
+          <div class="ex-cmd">docker pull nginx:alpine</div><div class="ex-comment"># Pull an image</div>
+          <div class="ex-cmd">docker build -t myapp:1.0 .</div><div class="ex-comment"># Build from Dockerfile in current dir</div>
+          <div class="ex-cmd">docker tag myapp:1.0 registry/myapp:1.0</div><div class="ex-comment"># Tag for pushing</div>
+          <div class="ex-cmd">docker push registry/myapp:1.0</div><div class="ex-comment"># Push to registry</div>
+          <div class="ex-cmd">docker image prune -a</div><div class="ex-comment"># Remove all unused images</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">docker compose <span class="badge b-new">recommended</span></span>
+        <a href="https://docs.docker.com/compose/reference/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Define and run multi-container applications with a YAML file</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">docker compose up -d</div><div class="ex-comment"># Start all services in background</div>
+          <div class="ex-cmd">docker compose down</div><div class="ex-comment"># Stop and remove containers and networks</div>
+          <div class="ex-cmd">docker compose down -v</div><div class="ex-comment"># Also remove named volumes</div>
+          <div class="ex-cmd">docker compose ps</div><div class="ex-comment"># Status of all services</div>
+          <div class="ex-cmd">docker compose logs -f app</div><div class="ex-comment"># Follow logs of a specific service</div>
+          <div class="ex-cmd">docker compose exec app bash</div><div class="ex-comment"># Shell into a running service</div>
+          <div class="ex-cmd">docker compose build --no-cache</div><div class="ex-comment"># Rebuild images</div>
+          <div class="ex-cmd">docker compose pull</div><div class="ex-comment"># Pull latest images for all services</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">podman <span class="badge b-new">recommended</span></span>
+        <a href="https://docs.podman.io/en/latest/Commands.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Rootless, daemonless drop-in replacement for Docker — same CLI syntax</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">podman run -d -p 8080:80 nginx</div><div class="ex-comment"># Run as non-root (rootless by default)</div>
+          <div class="ex-cmd">podman ps -a</div><div class="ex-comment"># All containers (same as docker ps -a)</div>
+          <div class="ex-cmd">podman generate systemd --name web > web.service</div><div class="ex-comment"># Generate systemd unit for a container</div>
+          <div class="ex-cmd">podman pod create --name mypod -p 8080:80</div><div class="ex-comment"># Create a pod (group of containers)</div>
+          <div class="ex-cmd">podman machine init && podman machine start</div><div class="ex-comment"># Start VM for rootless mode (macOS/Win)</div>
+          <div class="ex-cmd">podman play kube pod.yaml</div><div class="ex-comment"># Run Kubernetes YAML with Podman</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">docker system / docker volume</span>
+        <a href="https://docs.docker.com/reference/cli/docker/system/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">System-wide cleanup, disk usage, and volume management</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">docker system df</div><div class="ex-comment"># Disk usage: images, containers, volumes, cache</div>
+          <div class="ex-cmd">docker system prune -af --volumes</div><div class="ex-comment"># Remove ALL unused resources (careful!)</div>
+          <div class="ex-cmd">docker volume ls</div><div class="ex-comment"># List all volumes</div>
+          <div class="ex-cmd">docker volume inspect myvolume</div><div class="ex-comment"># Volume details and mountpoint</div>
+          <div class="ex-cmd">docker volume rm myvolume</div><div class="ex-comment"># Remove a volume</div>
+          <div class="ex-cmd">docker network ls</div><div class="ex-comment"># List all networks</div>
+          <div class="ex-cmd">docker network inspect bridge</div><div class="ex-comment"># Inspect network (containers, IPs)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctr-k8s" class="section">
+    <h3>Kubernetes — kubectl basics</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">kubectl (cluster &amp; context)</span>
+        <a href="https://kubernetes.io/docs/reference/kubectl/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage cluster contexts and check cluster health</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">kubectl config get-contexts</div><div class="ex-comment"># List all kubeconfig contexts</div>
+          <div class="ex-cmd">kubectl config use-context prod</div><div class="ex-comment"># Switch to a context</div>
+          <div class="ex-cmd">kubectl config current-context</div><div class="ex-comment"># Show active context</div>
+          <div class="ex-cmd">kubectl cluster-info</div><div class="ex-comment"># API server and DNS endpoints</div>
+          <div class="ex-cmd">kubectl get nodes -o wide</div><div class="ex-comment"># All nodes with IPs and roles</div>
+          <div class="ex-cmd">kubectl top nodes</div><div class="ex-comment"># CPU/memory usage per node</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">kubectl (workloads)</span>
+        <a href="https://kubernetes.io/docs/reference/kubectl/cheatsheet/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Inspect and manage pods, deployments, services, and namespaces</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Pods &amp; Deployments</div>
+          <div class="ex-cmd">kubectl get pods -n default -o wide</div><div class="ex-comment"># All pods in namespace with node info</div>
+          <div class="ex-cmd">kubectl get pods -A</div><div class="ex-comment"># All pods across all namespaces</div>
+          <div class="ex-cmd">kubectl describe pod mypod -n default</div><div class="ex-comment"># Full pod info, events, conditions</div>
+          <div class="ex-cmd">kubectl logs mypod -f --tail=100</div><div class="ex-comment"># Follow pod logs</div>
+          <div class="ex-cmd">kubectl exec -it mypod -- bash</div><div class="ex-comment"># Shell into a pod</div>
+          <div class="ex-cmd">kubectl rollout status deployment/myapp</div><div class="ex-comment"># Watch rollout progress</div>
+          <div class="ex-cmd">kubectl rollout undo deployment/myapp</div><div class="ex-comment"># Rollback to previous version</div>
+          <div class="ex-cmd">kubectl scale deployment/myapp --replicas=3</div><div class="ex-comment"># Scale replicas</div>
+          <div class="ex-cmd">kubectl delete pod mypod --grace-period=0</div><div class="ex-comment"># Force delete stuck pod</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Resources &amp; apply</div>
+          <div class="ex-cmd">kubectl apply -f manifest.yaml</div><div class="ex-comment"># Create or update from file</div>
+          <div class="ex-cmd">kubectl delete -f manifest.yaml</div><div class="ex-comment"># Delete resources from file</div>
+          <div class="ex-cmd">kubectl get all -n mynamespace</div><div class="ex-comment"># All resources in namespace</div>
+          <div class="ex-cmd">kubectl top pods -n default</div><div class="ex-comment"># CPU/memory per pod</div>
+          <div class="ex-cmd">kubectl get events --sort-by='.lastTimestamp' -A</div><div class="ex-comment"># Recent events cluster-wide</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">helm <span class="badge b-new">recommended</span></span>
+        <a href="https://helm.sh/docs/helm/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Kubernetes package manager — install, upgrade, and manage chart releases</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">helm repo add bitnami https://charts.bitnami.com/bitnami</div><div class="ex-comment"># Add a chart repository</div>
+          <div class="ex-cmd">helm repo update</div><div class="ex-comment"># Update all repo indexes</div>
+          <div class="ex-cmd">helm search repo nginx</div><div class="ex-comment"># Search available charts</div>
+          <div class="ex-cmd">helm install myrelease bitnami/nginx -n mynamespace</div><div class="ex-comment"># Install a chart</div>
+          <div class="ex-cmd">helm upgrade myrelease bitnami/nginx --set replicas=3</div><div class="ex-comment"># Upgrade with value override</div>
+          <div class="ex-cmd">helm list -A</div><div class="ex-comment"># All releases across namespaces</div>
+          <div class="ex-cmd">helm rollback myrelease 1</div><div class="ex-comment"># Rollback to revision 1</div>
+          <div class="ex-cmd">helm uninstall myrelease -n mynamespace</div><div class="ex-comment"># Uninstall a release</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">k9s <span class="badge b-new">recommended</span></span>
+        <a href="https://k9scli.io/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Terminal UI for Kubernetes — browse and manage cluster resources interactively</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">k9s</div><div class="ex-comment"># Launch TUI (uses current kubeconfig context)</div>
+          <div class="ex-cmd">k9s -n mynamespace</div><div class="ex-comment"># Start in a specific namespace</div>
+          <div class="ex-cmd">k9s --context prod</div><div class="ex-comment"># Use a specific context</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Key shortcuts inside k9s</div>
+          <div class="ex-cmd">:</div><div class="ex-comment"># Command mode — type resource name (pods, svc, deploy...)</div>
+          <div class="ex-cmd">l</div><div class="ex-comment"># View logs for selected pod</div>
+          <div class="ex-cmd">s</div><div class="ex-comment"># Shell into selected pod</div>
+          <div class="ex-cmd">d</div><div class="ex-comment"># Describe selected resource</div>
+          <div class="ex-cmd">ctrl+d</div><div class="ex-comment"># Delete selected resource</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctr-kvm" class="section">
+    <h3>KVM / QEMU — virtual machines</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">virsh</span>
+        <a href="https://www.libvirt.org/manpages/virsh.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage KVM/QEMU VMs via libvirt — start, stop, snapshot, console</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">virsh list --all</div><div class="ex-comment"># All VMs and their state</div>
+          <div class="ex-cmd">virsh start myvm</div><div class="ex-comment"># Start a VM</div>
+          <div class="ex-cmd">virsh shutdown myvm</div><div class="ex-comment"># Graceful shutdown</div>
+          <div class="ex-cmd">virsh destroy myvm</div><div class="ex-comment"># Force stop (like power cut)</div>
+          <div class="ex-cmd">virsh console myvm</div><div class="ex-comment"># Attach to serial console (Ctrl+] to exit)</div>
+          <div class="ex-cmd">virsh dominfo myvm</div><div class="ex-comment"># VM info: memory, vCPUs, state</div>
+          <div class="ex-cmd">virsh snapshot-create-as myvm snap1 "before upgrade"</div><div class="ex-comment"># Create snapshot</div>
+          <div class="ex-cmd">virsh snapshot-revert myvm snap1</div><div class="ex-comment"># Revert to snapshot</div>
+          <div class="ex-cmd">virsh dumpxml myvm > myvm.xml</div><div class="ex-comment"># Export VM definition</div>
+          <div class="ex-cmd">virsh net-list --all</div><div class="ex-comment"># Virtual networks</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">virt-install</span>
+        <a href="https://virt-manager.org/manpage/virt-install.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Create new KVM VMs from the command line</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">virt-install \
+  --name ubuntu24 \
+  --ram 2048 \
+  --vcpus 2 \
+  --disk path=/var/lib/libvirt/images/ubuntu24.qcow2,size=20 \
+  --cdrom /tmp/ubuntu-24.04-server.iso \
+  --os-variant ubuntu24.04 \
+  --network bridge=virbr0</div><div class="ex-comment"># Create VM from ISO</div>
+          <div class="ex-cmd">virt-install --name myvm --ram 1024 --vcpus 1 \
+  --disk /var/lib/libvirt/images/myvm.qcow2,size=10 \
+  --location http://archive.ubuntu.com/ubuntu/dists/noble/main/installer-amd64/ \
+  --extra-args "console=ttyS0"</div><div class="ex-comment"># Network install with serial console</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">qemu-img</span>
+        <a href="https://www.qemu.org/docs/master/tools/qemu-img.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Create, convert, inspect, and resize QEMU disk images</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">qemu-img create -f qcow2 disk.qcow2 20G</div><div class="ex-comment"># Create a new qcow2 image</div>
+          <div class="ex-cmd">qemu-img info disk.qcow2</div><div class="ex-comment"># Image format, virtual size, disk usage</div>
+          <div class="ex-cmd">qemu-img convert -f raw -O qcow2 disk.raw disk.qcow2</div><div class="ex-comment"># Convert raw to qcow2</div>
+          <div class="ex-cmd">qemu-img convert -f qcow2 -O vmdk disk.qcow2 disk.vmdk</div><div class="ex-comment"># Convert to VMware format</div>
+          <div class="ex-cmd">qemu-img resize disk.qcow2 +10G</div><div class="ex-comment"># Grow disk image by 10G</div>
+          <div class="ex-cmd">qemu-img snapshot -l disk.qcow2</div><div class="ex-comment"># List internal snapshots</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">virt-customize / virt-sysprep <span class="badge b-adv">advanced</span></span>
+        <a href="https://libguestfs.org/virt-customize.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Modify disk images offline — inject files, run commands, reset passwords</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">virt-customize -a disk.qcow2 --root-password password:newpass</div><div class="ex-comment"># Reset root password</div>
+          <div class="ex-cmd">virt-customize -a disk.qcow2 --copy-in /etc/hosts:/etc/</div><div class="ex-comment"># Inject a file into the image</div>
+          <div class="ex-cmd">virt-customize -a disk.qcow2 --run-command 'apt-get install -y nginx'</div><div class="ex-comment"># Run command inside image</div>
+          <div class="ex-cmd">virt-sysprep -a disk.qcow2</div><div class="ex-comment"># Seal image for cloning (reset SSH keys, machine-id)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctr-build" class="section">
+    <h3>Build &amp; provision — Packer, Vagrant, Buildah, Skopeo</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">packer <span class="badge b-new">recommended</span></span>
+        <a href="https://developer.hashicorp.com/packer/docs" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Build identical machine images for multiple platforms from a single config</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">packer init .</div><div class="ex-comment"># Download required plugins from packer config</div>
+          <div class="ex-cmd">packer validate template.pkr.hcl</div><div class="ex-comment"># Validate config syntax</div>
+          <div class="ex-cmd">packer build template.pkr.hcl</div><div class="ex-comment"># Build the image</div>
+          <div class="ex-cmd">packer build -var 'region=eu-west-1' template.pkr.hcl</div><div class="ex-comment"># Override variables</div>
+          <div class="ex-cmd">packer build -only='amazon-ebs.*' template.pkr.hcl</div><div class="ex-comment"># Build only AWS AMI</div>
+          <div class="ex-cmd">packer build -debug template.pkr.hcl</div><div class="ex-comment"># Debug mode (pause at each step)</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Minimal HCL template (ubuntu + AWS)</div>
+          <div class="ex-cmd">source "amazon-ebs" "ubuntu" {</div>
+          <div class="ex-cmd">  ami_name      = "my-ubuntu-{{timestamp}}"</div>
+          <div class="ex-cmd">  instance_type = "t3.micro"</div>
+          <div class="ex-cmd">  source_ami_filter { ... }</div>
+          <div class="ex-cmd">}</div>
+          <div class="ex-cmd">build { sources = ["source.amazon-ebs.ubuntu"] }</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">vagrant</span>
+        <a href="https://developer.hashicorp.com/vagrant/docs" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Provision and manage reproducible dev VMs with a single Vagrantfile</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">vagrant init ubuntu/noble64</div><div class="ex-comment"># Create a Vagrantfile for Ubuntu 24.04</div>
+          <div class="ex-cmd">vagrant up</div><div class="ex-comment"># Create and provision the VM</div>
+          <div class="ex-cmd">vagrant ssh</div><div class="ex-comment"># SSH into the running VM</div>
+          <div class="ex-cmd">vagrant halt</div><div class="ex-comment"># Gracefully stop the VM</div>
+          <div class="ex-cmd">vagrant destroy -f</div><div class="ex-comment"># Destroy the VM (irreversible)</div>
+          <div class="ex-cmd">vagrant reload --provision</div><div class="ex-comment"># Restart and re-run provisioners</div>
+          <div class="ex-cmd">vagrant snapshot save before-upgrade</div><div class="ex-comment"># Save a snapshot</div>
+          <div class="ex-cmd">vagrant status</div><div class="ex-comment"># VM state</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">buildah <span class="badge b-new">recommended</span></span>
+        <a href="https://github.com/containers/buildah/tree/main/docs" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Build OCI/Docker container images without a daemon — rootless and scriptable</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">buildah build -t myapp:1.0 .</div><div class="ex-comment"># Build from Dockerfile (rootless)</div>
+          <div class="ex-cmd">buildah from ubuntu:24.04</div><div class="ex-comment"># Start a working container from base image</div>
+          <div class="ex-cmd">buildah run mycontainer -- apt-get install -y nginx</div><div class="ex-comment"># Run command in working container</div>
+          <div class="ex-cmd">buildah copy mycontainer ./app /app</div><div class="ex-comment"># Copy files into container</div>
+          <div class="ex-cmd">buildah commit mycontainer myapp:1.0</div><div class="ex-comment"># Commit to image</div>
+          <div class="ex-cmd">buildah push myapp:1.0 docker://registry/myapp:1.0</div><div class="ex-comment"># Push to registry</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">skopeo</span>
+        <a href="https://github.com/containers/skopeo/blob/main/docs/skopeo.1.md" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Inspect, copy, and sync container images between registries — no daemon needed</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">skopeo inspect docker://nginx:alpine</div><div class="ex-comment"># Inspect remote image metadata without pulling</div>
+          <div class="ex-cmd">skopeo copy docker://nginx:alpine docker://myregistry/nginx:alpine</div><div class="ex-comment"># Copy between registries</div>
+          <div class="ex-cmd">skopeo copy docker://nginx:alpine docker-archive:nginx.tar</div><div class="ex-comment"># Save to local tar archive</div>
+          <div class="ex-cmd">skopeo sync --src docker --dest dir nginx:alpine /tmp/images/</div><div class="ex-comment"># Sync image to directory</div>
+          <div class="ex-cmd">skopeo list-tags docker://nginx</div><div class="ex-comment"># List all available tags</div>
+          <div class="ex-cmd">skopeo delete docker://myregistry/myapp:old</div><div class="ex-comment"># Delete an image from registry</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">crane / cosign <span class="badge b-adv">advanced</span></span>
+        <a href="https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Container registry interactions and image signing/verification</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">crane examples</div>
+          <div class="ex-cmd">crane digest nginx:alpine</div><div class="ex-comment"># Get image digest without pulling</div>
+          <div class="ex-cmd">crane ls nginx</div><div class="ex-comment"># List tags in a registry</div>
+          <div class="ex-cmd">crane cp nginx:alpine myregistry/nginx:alpine</div><div class="ex-comment"># Fast registry-to-registry copy</div>
+          <div class="ex-cmd">crane config nginx:alpine</div><div class="ex-comment"># Image config JSON (entrypoint, env, layers)</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">cosign examples</div>
+          <div class="ex-cmd">cosign generate-key-pair</div><div class="ex-comment"># Generate signing key pair</div>
+          <div class="ex-cmd">cosign sign --key cosign.key myregistry/myapp:1.0</div><div class="ex-comment"># Sign an image</div>
+          <div class="ex-cmd">cosign verify --key cosign.pub myregistry/myapp:1.0</div><div class="ex-comment"># Verify image signature</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctr-lxc" class="section">
+    <h3>LXC / LXD — system containers</h3>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lxc (LXD CLI) <span class="badge b-new">recommended</span></span>
+        <a href="https://documentation.ubuntu.com/lxd/en/latest/reference/cli/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Manage LXD containers and VMs — full OS containers, not app containers</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">lxc launch ubuntu:24.04 mycontainer</div><div class="ex-comment"># Create and start a container</div>
+          <div class="ex-cmd">lxc list</div><div class="ex-comment"># All containers: state, IP, type</div>
+          <div class="ex-cmd">lxc exec mycontainer -- bash</div><div class="ex-comment"># Shell into container</div>
+          <div class="ex-cmd">lxc stop mycontainer</div><div class="ex-comment"># Stop container</div>
+          <div class="ex-cmd">lxc delete mycontainer</div><div class="ex-comment"># Delete container</div>
+          <div class="ex-cmd">lxc snapshot mycontainer snap1</div><div class="ex-comment"># Create snapshot</div>
+          <div class="ex-cmd">lxc restore mycontainer snap1</div><div class="ex-comment"># Restore from snapshot</div>
+          <div class="ex-cmd">lxc copy mycontainer newcontainer</div><div class="ex-comment"># Clone a container</div>
+          <div class="ex-cmd">lxc config set mycontainer limits.memory 512MB</div><div class="ex-comment"># Set memory limit</div>
+          <div class="ex-cmd">lxc file push ./app.conf mycontainer/etc/app.conf</div><div class="ex-comment"># Copy file into container</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">lxc (profiles &amp; networks)</span>
+        <a href="https://documentation.ubuntu.com/lxd/en/latest/profiles/" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Reusable configuration profiles and network management for LXD</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Profiles</div>
+          <div class="ex-cmd">lxc profile list</div><div class="ex-comment"># List all profiles</div>
+          <div class="ex-cmd">lxc profile show default</div><div class="ex-comment"># Show a profile definition</div>
+          <div class="ex-cmd">lxc profile create myprofile</div><div class="ex-comment"># Create a new profile</div>
+          <div class="ex-cmd">lxc profile assign mycontainer default,myprofile</div><div class="ex-comment"># Apply profiles to container</div>
+        </div>
+        <div class="example">
+          <div class="ex-label">Networks</div>
+          <div class="ex-cmd">lxc network list</div><div class="ex-comment"># All LXD networks</div>
+          <div class="ex-cmd">lxc network show lxdbr0</div><div class="ex-comment"># Network details and config</div>
+          <div class="ex-cmd">lxc network create mynet ipv4.address=10.10.10.1/24</div><div class="ex-comment"># Create a bridge network</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-header" onclick="toggle(this)">
+        <span class="cmd-name">systemd-nspawn <span class="badge b-adv">advanced</span></span>
+        <a href="https://man7.org/linux/man-pages/man1/systemd-nspawn.1.html" target="_blank" rel="noopener" class="doc-link">&#128196; docs</a>
+        <span class="cmd-desc">Lightweight OS container using systemd — no extra tooling required</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="cmd-body">
+        <div class="example">
+          <div class="ex-label">Examples</div>
+          <div class="ex-cmd">systemd-nspawn -D /var/lib/machines/mycontainer</div><div class="ex-comment"># Start container from directory</div>
+          <div class="ex-cmd">systemd-nspawn -D /path -b</div><div class="ex-comment"># Boot full OS (runs init)</div>
+          <div class="ex-cmd">machinectl list</div><div class="ex-comment"># List running nspawn machines</div>
+          <div class="ex-cmd">machinectl shell mycontainer</div><div class="ex-comment"># Shell into running machine</div>
+          <div class="ex-cmd">machinectl stop mycontainer</div><div class="ex-comment"># Stop machine</div>
         </div>
       </div>
     </div>
